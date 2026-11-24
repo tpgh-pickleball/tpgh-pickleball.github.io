@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>創新匹克球隊平台</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;800&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE: friendly club clubhouse, clear and practical, like a team notice board.
+   IDEA: a pickleball court — blue court, green surround, white lines, the kitchen line.
+   PICTURE: the court drawn as the header band; below it the working sign-up board.
+   COLOUR and TYPE: court blue #1f5fa8, surround green #2f7a52, ball yellow-green #d4ee3a accent; Barlow Condensed numbers + Noto Sans TC.
+   LAYOUT: court header, sticky tab row, one calm column of cards up to 1100px; stacks on phones. */
+:root{color-scheme:light dark;
+--bg:light-dark(#f4f7f2,#0f1a14);--card:light-dark(#ffffff,#16251d);--ink:light-dark(#13231a,#e8f1ea);--mut:light-dark(#5a6b60,#9db3a5);
+--line:light-dark(#dbe5dc,#2a3d31);--court:#1f5fa8;--green:#2f7a52;--ball:#d4ee3a;--ballink:#1c2a05;--warn:light-dark(#b3261e,#ff8a80);--ok:light-dark(#1f7a3f,#7fd69b)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "Noto Sans TC",system-ui,sans-serif;overflow-x:clip}
+.num{font-family:"Barlow Condensed","Noto Sans TC",sans-serif;font-weight:800;font-variant-numeric:tabular-nums}
+header{background:#fff;color:#153f8a;position:relative}
+.hd{max-width:1100px;margin:0 auto;padding:18px max(4vw,14px) 14px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 24px}
+.logo{width:min(100%,520px);height:auto;display:block}
+.hs{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.slogan{margin:0;font-size:clamp(22px,3.4vw,34px);font-weight:700;letter-spacing:.12em;color:#2f9a44;transform:skewX(-8deg);white-space:nowrap}
+#who{font-size:13px;background:#eef3fb;color:#153f8a;border-radius:99px;padding:3px 12px}
+.stripe{display:grid;grid-template-columns:5fr 2fr 1fr;height:8px}.stripe i:nth-child(1){background:#153f8a}.stripe i:nth-child(2){background:#2f9a44}.stripe i:nth-child(3){background:#d4ee3a}
+@media(max-width:600px){.hs{align-items:flex-start}}
+nav{position:sticky;top:0;z-index:5;background:var(--card);border-bottom:1px solid var(--line);display:flex;gap:4px;overflow-x:auto;padding:6px max(5vw,10px)}
+nav a{flex:none;text-decoration:none;color:var(--mut);padding:10px 14px;border-radius:10px;font-weight:500;min-height:44px}
+nav a.on{background:var(--court);color:#fff}
+main{max-width:1100px;margin:0 auto;padding:20px max(4vw,14px) 60px}
+section{display:none}section.on{display:block}
+h2{font-size:26px;margin:4px 0 14px}h3{font-size:18px;margin:0 0 10px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr));gap:14px}
+.f{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,200px),1fr));gap:12px}
+label{display:flex;flex-direction:column;gap:4px;font-size:14px;color:var(--mut)}
+input,select,textarea{font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-height:44px}
+textarea{min-height:110px}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible,nav a:focus-visible{outline:3px solid var(--ball);outline-offset:2px}
+button{font:inherit;font-weight:700;min-height:44px;padding:8px 16px;border-radius:10px;border:0;background:var(--court);color:#fff;cursor:pointer}
+button.ball{background:var(--ball);color:var(--ballink)}button.ghost{background:transparent;color:var(--court);border:1px solid var(--line)}
+button.del{background:transparent;color:var(--warn);border:1px solid var(--line);min-height:36px;padding:4px 10px;font-size:14px}
+button:disabled{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.mut{color:var(--mut);font-size:14px}.note{font-size:14px;padding:10px 14px;border-radius:10px;background:light-dark(#fff8d6,#2e2a12);margin-bottom:14px}
+.sess{display:grid;grid-template-columns:96px minmax(0,1fr);gap:14px}
+.date{background:var(--court);color:#fff;border-radius:12px;text-align:center;padding:8px 4px;align-self:start}
+.date b{display:block;font-size:40px;line-height:1}.date span{font-size:13px}
+.meter{height:12px;background:var(--line);border-radius:99px;overflow:hidden;margin:8px 0}
+.meter i{display:block;height:100%;background:var(--green);border-radius:99px}.meter i.full{background:var(--warn)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.chips span{background:var(--bg);border:1px solid var(--line);border-radius:99px;padding:2px 10px;font-size:14px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,160px),1fr));gap:12px;margin-bottom:14px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px}.kpi b{display:block;font-size:36px;line-height:1.1}
+.bar{display:grid;grid-template-columns:minmax(0,8em) minmax(0,1fr) 4em;gap:8px;align-items:center;font-size:14px;margin:6px 0}
+.bar>div{height:14px;background:var(--line);border-radius:99px;overflow:hidden}.bar>div i{display:block;height:100%;background:var(--court)}
+.bar>span:last-child{text-align:right;white-space:nowrap}
+table{width:100%;border-collapse:collapse;font-size:15px}th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--mut);font-weight:500;font-size:13px}td.r,th.r{text-align:right;white-space:nowrap}
+.paid{color:var(--ok);font-weight:700}.unpaid{color:var(--warn);font-weight:700}
+details>summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;align-items:center;color:var(--court)}
+.admin{border-color:var(--court);border-style:dashed}
+.scroll{overflow-x:auto}
+.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:18px;align-items:start}
+.hero img{width:100%;height:auto;border-radius:16px;display:block;box-shadow:0 6px 20px rgba(0,0,0,.18)}
+.facts{display:grid;gap:0}.facts div{display:grid;grid-template-columns:6.5em minmax(0,1fr);gap:10px;padding:11px 0;border-bottom:1px solid var(--line)}
+.facts dt{color:var(--mut);font-size:14px}.facts dd{margin:0;font-weight:500}
+.tag{font-size:clamp(22px,3vw,30px);font-weight:700;line-height:1.25;margin:0 0 10px;color:var(--court)}
+.org{display:flex;flex-direction:column;align-items:center}
+.org .lv{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;position:relative;padding:14px 0}
+.org .lv+.lv::before{content:"";position:absolute;top:0;left:50%;width:2px;height:14px;background:var(--mut)}
+.node{background:var(--card);border:2px solid var(--court);border-radius:14px;padding:10px 16px;text-align:center;min-width:150px}
+.node.top{background:var(--court);color:#fff}.node.top small{color:#dbe8ff}
+.node b{display:block;font-size:18px}.node small{display:block;color:var(--mut);font-size:13px}.node .rl{display:block;font-size:13px;opacity:.85}
+.bank{background:var(--court);color:#fff;border-radius:16px;padding:18px;margin-bottom:14px}
+.bank .acct{font-size:clamp(26px,5vw,38px);letter-spacing:.04em;word-break:break-all}
+.bank button{background:var(--ball);color:var(--ballink)}
+.bank dl{margin:10px 0}.bank dl div{display:grid;grid-template-columns:5.5em minmax(0,1fr);gap:8px;padding:4px 0}.bank dt{opacity:.8;font-size:14px}.bank dd{margin:0}
+@media(max-width:700px){.hero{grid-template-columns:minmax(0,1fr)}}
+.opt{display:flex!important;flex-direction:row!important;align-items:center;gap:10px;color:var(--ink)!important;font-size:16px!important;border:2px solid var(--line);border-radius:12px;padding:10px 14px;min-height:48px;cursor:pointer;background:var(--card)}
+.opt input{appearance:auto;width:22px;height:22px;min-height:0;padding:0;margin:0;flex:none;accent-color:#2f9a44}
+.opt:has(input:checked){border-color:#2f9a44;background:light-dark(#eaf6ec,#183323);font-weight:700}
+.fs{grid-column:1/-1;border:0;padding:0;margin:0}.fs legend{color:var(--mut);font-size:14px;margin-bottom:6px;padding:0}
+.opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,190px),1fr));gap:8px}
+.oath{background:light-dark(#fbfdff,#132033);border:2px solid #153f8a;border-radius:16px;padding:22px}
+.oath h3{background:#153f8a;color:#fff;margin:-22px -22px 16px;padding:12px 22px;border-radius:13px 13px 0 0;font-size:22px;letter-spacing:.2em}
+.oath p{margin:0 0 12px;line-height:1.9;font-size:17px}.oath .cry{color:#153f8a;font-weight:700;font-size:22px;line-height:1.5}
+:root[data-theme=dark] .oath .cry{color:#9cc0ff}
+.ag{border-left:6px solid var(--court);padding-left:14px;margin-bottom:16px}.ag:nth-child(3n+2){border-color:#2f9a44}.ag:nth-child(3n){border-color:#e08a00}
+.ag ul{margin:6px 0 0;padding-left:20px}.ag li{margin:3px 0}
+#toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:99px;font-size:15px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:9}
+#toast.on{opacity:1}
+@media(prefers-reduced-motion:reduce){#toast{transition:none}}
+@media(max-width:600px){.sess{grid-template-columns:72px minmax(0,1fr)}.date b{font-size:30px}
+table{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding-block:10px;border-bottom:1px solid var(--line)}.stack td{display:flow-root;border:0;padding:3px 0;padding-inline-start:7em;text-align:start}.stack td::before{content:attr(data-l);float:inline-start;width:6.5em;margin-inline-start:-7em;color:var(--mut)}.stack td:empty{display:none}}
+</style>
+<script>new MutationObserver(()=>{for(const c of document.querySelectorAll('.stack td:not([data-l])')){let i=0,p=c;while(p=p.previousElementSibling)i+=p.colSpan;c.dataset.l=c.closest('table').rows[0].cells[i]?.textContent||''}}).observe(document,{childList:true,subtree:true})</script>
+</head>
+<body>
+<header>
+<div class="hd"><img src="logo.png" alt="台北創新匹克球隊" class="logo" width="1300" height="320">
+<div class="hs"><p class="slogan">揮出創新　服務同行</p><div class="row" style="justify-content:flex-end;gap:8px"><span id="who">連線中…</span><button type="button" id="logoutBtn" class="ghost" style="min-height:32px;padding:2px 12px;font-size:13px" hidden>登出</button></div></div></div>
+<div class="stripe" aria-hidden="true"><i></i><i></i><i></i></div>
+</header>
+<nav id="nav">
+<a href="#intro" data-t="intro">球隊介紹</a><a href="#profile" data-t="profile">會員資料</a><a href="#sessions" data-t="sessions">場次登記</a><a href="#fees" data-t="fees">會費繳費</a><a href="#survey" data-t="survey" id="navSurvey">問卷</a>
+<a href="#finance" data-t="finance">財務</a><a href="#stats" data-t="stats">統計</a><a href="#members" data-t="members" id="navMembers" hidden>會員名冊</a>
+</nav>
+<main>
+<div id="status" class="note" hidden></div>
+
+<section id="intro">
+<div class="hero card">
+<img src="poster.jpg" alt="台北創新匹克球隊第一階段開放報名海報" width="800" height="1000">
+<div><p class="tag" id="iTag">一起揮拍、一起健康、一起成長！</p>
+<p id="iAbout" class="mut" style="font-size:16px"></p>
+<dl class="facts" id="iFacts"></dl>
+<div class="row" style="margin-top:14px"><a href="#profile"><button type="button" class="ball">填寫會員資料</button></a><a href="#sessions"><button type="button" class="ghost">報名場次</button></a></div></div>
+</div>
+<div class="card"><h3>球隊組織架構</h3><div class="org" id="iOrg"></div></div>
+<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr))">
+<div class="card"><h3>費用說明</h3><div id="iFees"></div></div>
+<div class="bank" id="iBank"></div>
+</div>
+<div class="oath" id="iOath"></div>
+<div class="card admin" id="seedBox" hidden><h3>初次啟用</h3><p class="mut">資料庫還是空的。按下方按鈕，匯入舊平台的球隊介紹、組織架構、費用、匯款帳號、宣誓詞與會費設定。</p><button type="button" id="seedBtn" class="ball">匯入初始內容</button></div>
+<details class="card admin" data-admin hidden style="margin-top:14px"><summary>✎ 編輯介紹內容（管理員）</summary>
+<form id="fIntro" style="display:grid;gap:12px;margin-top:10px">
+<label>標語<input id="eTag"></label>
+<label>球隊簡介<textarea id="eAbout" style="min-height:80px"></textarea></label>
+<label>基本資訊（一行一項：項目｜內容）<textarea id="eFacts"></textarea></label>
+<label>組織架構（一行一職位：層級｜職稱｜姓名｜說明；層級 1 在最上層。姓名可留空，會依「會員名冊」設定的球隊職位自動帶入）<textarea id="eOrg"></textarea></label>
+<label>費用（一行一項：項目｜金額｜說明）<textarea id="eFees"></textarea></label>
+<div style="display:grid;gap:12px"><label>入隊宣誓詞（空一行分段；最後一段為口號）<textarea id="eOath" style="min-height:200px"></textarea></label>
+</div><div class="f"><label>銀行名稱<input id="eBank"></label><label>銀行代碼<input id="eCode" inputmode="numeric"></label><label>分行<input id="eBranch"></label>
+<label>帳號<input id="eAcct" inputmode="numeric"></label><label>戶名<input id="eHolder"></label></div>
+<label>匯款說明<input id="eBankNote" placeholder="例：匯款後請於匹克群告知姓名與帳號末五碼"></label>
+<div class="row"><button>儲存介紹內容</button></div></form></details>
+</section>
+
+<section id="sessions">
+<h2>場次登記</h2>
+<details class="card admin" data-admin hidden><summary>＋ 新增場次（管理員）</summary>
+<form id="fSess" class="f" style="margin-top:10px">
+<label>日期<input type="date" id="sDate" required></label><label>開始<input type="time" id="sStart" value="19:00" required></label>
+<label>結束<input type="time" id="sEnd" value="21:00" required></label><label>場地<input id="sVenue" placeholder="例：大安運動中心 3F" required></label>
+<label>名額<input type="number" id="sCap" value="12" min="1" required></label><label>每人費用（元）<input type="number" id="sFee" value="200" min="0"></label>
+<label>每週重複（週數）<input type="number" id="sWeeks" value="1" min="1" max="26"></label><label>備註<input id="sNote" placeholder="例：新手教學"></label>
+<div class="row"><button>建立場次</button></div></form></details>
+<div id="sessList"></div>
+<details class="card"><summary>過去場次</summary><div id="sessPast"></div></details>
+</section>
+
+<section id="profile">
+<h2>會員資料</h2>
+<div class="card" id="authCard" hidden>
+<h3>登入</h3>
+<p class="mut" id="lineTip" hidden>你正在 LINE 內建瀏覽器中，Google 登入會被擋下。請點右上角「⋯」選「以其他瀏覽器開啟」，或改用下方 Email 登入。</p>
+<div class="row"><button type="button" class="ball" id="gBtn">使用 Google（Gmail）登入</button></div>
+<hr style="border:0;border-top:1px solid var(--line);margin:16px 0">
+<form id="fLogin" class="f">
+<label>Email<input type="email" id="lgEmail" autocomplete="email" required></label>
+<label>密碼<input type="password" id="lgPass" autocomplete="current-password" required></label>
+<div class="row" style="align-self:end"><button>Email 登入</button><button type="button" class="ghost" id="forgotBtn">忘記密碼</button></div>
+</form>
+<p style="margin:16px 0 0">第一次使用、沒有 Gmail？<button type="button" class="ghost" id="regBtn">用 Email＋密碼註冊新會員</button></p>
+</div>
+<div class="note" id="profNote">資料僅你本人與管理員看得到。親友若沒有帳號，可請管理員在「會員名冊」代為建檔。</div>
+<form id="fProf" class="card f">
+<fieldset class="fs" id="regBox" hidden><legend>建立登入帳號（之後用這組 Email＋密碼登入）</legend><div class="f">
+<label>登入 Email *<input type="email" id="rgEmail" autocomplete="email"></label>
+<label>設定密碼 *（至少 6 碼）<input type="password" id="rgPass" autocomplete="new-password" minlength="6"></label>
+<label>再次輸入密碼 *<input type="password" id="rgPass2" autocomplete="new-password"></label></div>
+<p class="mut" style="margin:8px 0 0">已經有帳號？<button type="button" class="ghost" id="backLogin" style="min-height:36px;padding:2px 10px">回到登入</button></p></fieldset>
+<label>姓名 *<input id="pName" required></label><label>暱稱<input id="pNick"></label>
+<label>身分 *<select id="pRel" required><option>社友</option><option>社友眷屬</option><option>朋友</option></select></label>
+<label>介紹社友<input id="pRef" placeholder="身分為眷屬／朋友時填寫"></label>
+<label>手機 *<input id="pPhone" type="tel" required></label><label>Email<input id="pEmail" type="email"></label>
+<label>性別<select id="pGender"><option></option><option>男</option><option>女</option><option>不透露</option></select></label>
+<label>程度<select id="pLevel"><option>從未打過</option><option>新手</option><option>初級</option><option>中級</option><option>進階</option></select></label>
+<fieldset class="fs"><legend>偏好球敘時間（可複選）</legend><div class="opts"><label class="opt"><input type="checkbox" name="pT" value="週六下午"><span>週六下午</span></label><label class="opt"><input type="checkbox" name="pT" value="週日下午"><span>週日下午</span></label><label class="opt"><input type="checkbox" name="pT" value="平日晚間"><span>平日晚間</span></label><label class="opt"><input type="checkbox" name="pT" value="其他"><span>其他</span></label></div><input id="pOtherTime" placeholder="勾選「其他」請填寫時段，例：平日早上" style="margin-top:8px;width:100%"></fieldset>
+<fieldset class="fs"><legend>球敘頻率偏好（單選）</legend><div class="opts"><label class="opt"><input type="radio" name="pF" value="每週多次"><span>每週多次</span></label><label class="opt"><input type="radio" name="pF" value="每週一次"><span>每週一次</span></label><label class="opt"><input type="radio" name="pF" value="兩週一次"><span>兩週一次</span></label></div></fieldset>
+<label>是否有球拍<select id="pPaddle"><option>有</option><option>沒有，需借用</option><option>想團購</option></select></label>
+<label>球衣尺寸<select id="pSize"><option></option><option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option><option>2XL</option><option>3XL</option></select></label>
+<label>緊急聯絡人<input id="pEmer"></label><label>緊急聯絡電話<input id="pEmerPhone" type="tel"></label>
+<label style="grid-column:1/-1">備註（健康注意事項等）<textarea id="pNote"></textarea></label>
+<label class="opt" style="grid-column:1/-1"><input type="checkbox" id="pOath"><span>我已閱讀「<a href="#intro">隊員入隊宣示誓詞</a>」，願意遵守並完成線上宣誓</span></label>
+<label class="opt" style="grid-column:1/-1"><input type="checkbox" id="pConsent" required><span>我同意球隊為聯絡、保險及活動管理使用以上個人資料 *</span></label>
+<div class="row"><button id="pSave">儲存資料</button><span class="mut" id="pMsg"></span></div>
+</form>
+</section>
+
+<section id="survey">
+<h2>問卷調查</h2>
+<details class="card admin" data-admin hidden><summary>＋ 建立問卷（管理員）</summary>
+<form id="fSurv" style="margin-top:10px;display:grid;gap:12px">
+<label>問卷標題<input id="qTitle" required placeholder="例：球隊成立意願調查"></label>
+<label>說明<input id="qDesc"></label>
+<label>題目（一行一題，格式：題型：題目 | 選項1, 選項2）<textarea id="qBody" required placeholder="單選：偏好打球時段 | 平日晚上, 週六上午, 週日下午&#10;多選：想參加的活動 | 新手教學, 友誼賽, 聯誼聚餐&#10;簡答：其他建議"></textarea></label>
+<p class="mut" style="margin:0">題型可用「單選」「多選」「簡答」。</p>
+<div class="row"><button>發布問卷</button></div></form></details>
+<div id="survList"></div>
+</section>
+
+<section id="fees">
+<h2>會費繳費</h2>
+<div class="card admin" data-admin hidden>
+<h3>會費設定與登錄（管理員）</h3>
+<form id="fCfg" class="f"><label>目前收費期別<input id="cPeriod" placeholder="例：2026 年度"></label><label>年繳會費（元）<input type="number" id="cAmt" min="0"></label><label>場地分攤費（元）<input type="number" id="cVenue" min="0"></label><div class="row" style="align-self:end"><button class="ghost">更新設定</button></div></form>
+<hr style="border:0;border-top:1px solid var(--line);margin:16px 0">
+<form id="fFee" class="f">
+<label>會員<select id="feeMem" required></select></label>
+<label>項目<select id="feeItem"><option>年繳會費</option><option>場地分攤費</option><option>臨打費</option><option>球衣／裝備</option><option>其他</option></select></label>
+<label>期別<input id="feePeriod" required></label><label>金額（元）<input type="number" id="feeAmt" required min="0"></label>
+<label>繳費日<input type="date" id="feeDate" required></label>
+<label>方式<input value="匯款" disabled></label>
+<label>備註<input id="feeNote" placeholder="匯款帳號末五碼"></label>
+<div class="row" style="align-self:end"><button>登錄繳費</button></div></form>
+</div>
+<div class="kpis" id="feeKpi"></div>
+<div class="card" id="feeStatusCard"><h3 id="feeStatusTitle">本期繳費狀況</h3><div id="feeStatus"></div></div>
+<div class="card"><h3>繳費紀錄</h3><div id="feeList"></div></div>
+</section>
+
+<section id="finance">
+<h2>球隊財務</h2>
+<div class="kpis" id="finKpi"></div>
+<details class="card admin" data-admin hidden><summary>＋ 記一筆收支（管理員）</summary>
+<form id="fLed" class="f" style="margin-top:10px">
+<label>日期<input type="date" id="lDate" required></label>
+<label>類型<select id="lType"><option value="out">支出</option><option value="in">收入</option></select></label>
+<label>類別<select id="lCat"><option>場地租借</option><option>球具</option><option>球衣</option><option>保險</option><option>餐敘</option><option>贊助</option><option>其他</option></select></label>
+<label>金額（元）<input type="number" id="lAmt" required min="0"></label><label>說明<input id="lDesc" required></label>
+<div class="row" style="align-self:end"><button>新增</button></div></form></details>
+<div class="card"><h3>支出類別</h3><div id="finCat"></div></div>
+<div class="card"><h3>收支明細</h3><div id="finList"></div></div>
+</section>
+
+<section id="stats">
+<h2>統計</h2>
+<div class="kpis" id="stKpi"></div>
+<div class="grid">
+<div class="card"><h3>近期場次出席</h3><div id="stSess"></div></div>
+<div class="card"><h3>出席排行</h3><div id="stTop"></div></div>
+<div class="card" data-admin hidden><h3>會員組成（身分）</h3><div id="stRel"></div></div>
+<div class="card" data-admin hidden><h3>會員程度</h3><div id="stLvl"></div></div>
+<div class="card" data-admin hidden><h3>偏好球敘時間</h3><div id="stTime"></div></div>
+<div class="card" data-admin hidden><h3>球敘頻率偏好</h3><div id="stFreq"></div></div>
+</div>
+</section>
+
+<section id="members">
+<h2>會員名冊</h2>
+<div class="card admin"><h3>管理員名單</h3><p class="mut" style="margin-top:0">管理員可看全部會員資料、登錄繳費、管理場次與內容。請填對方登入用的 Gmail。</p>
+<div class="chips" id="adminList"></div><form id="fAdmin" class="row" style="margin-top:10px"><input type="email" id="adEmail" placeholder="新增管理員 Gmail" required style="flex:1"><button class="ghost">新增管理員</button></form></div>
+<details class="card admin" id="mBox"><summary id="mSum">＋ 代為建檔（不使用平台的親友）</summary>
+<form id="fMem" class="f" style="margin-top:10px">
+<label>姓名 *<input id="mName" required></label>
+<label>身分<select id="mRel"><option>社友</option><option>社友眷屬</option><option>朋友</option></select></label>
+<label>介紹社友<input id="mRef"></label><label>手機<input id="mPhone" type="tel"></label><label>Email<input id="mEmail" type="email"></label>
+<label>球隊職位<select id="mRole" class="roleSel"></select></label>
+<label>程度<select id="mLevel"><option>從未打過</option><option>新手</option><option>初級</option><option>中級</option><option>進階</option></select></label>
+<label>球衣尺寸<input id="mSize"></label>
+<fieldset class="fs"><legend>偏好球敘時間（可複選）</legend><div class="opts"><label class="opt"><input type="checkbox" name="mT" value="週六下午"><span>週六下午</span></label><label class="opt"><input type="checkbox" name="mT" value="週日下午"><span>週日下午</span></label><label class="opt"><input type="checkbox" name="mT" value="平日晚間"><span>平日晚間</span></label><label class="opt"><input type="checkbox" name="mT" value="其他"><span>其他</span></label></div><input id="mOtherTime" placeholder="勾選「其他」請填寫時段，例：平日早上" style="margin-top:8px;width:100%"></fieldset>
+<fieldset class="fs"><legend>球敘頻率偏好（單選）</legend><div class="opts"><label class="opt"><input type="radio" name="mF" value="每週多次"><span>每週多次</span></label><label class="opt"><input type="radio" name="mF" value="每週一次"><span>每週一次</span></label><label class="opt"><input type="radio" name="mF" value="兩週一次"><span>兩週一次</span></label></div></fieldset>
+<label>備註<input id="mNote"></label>
+<div class="row" style="align-self:end"><button id="mBtn">新增會員</button><button type="button" class="ghost" id="mCancel" hidden>取消編輯</button></div></form></details>
+<div class="card"><div class="row" style="margin-bottom:10px"><input id="mSearch" placeholder="搜尋姓名、電話、身分" style="flex:1"><button class="ghost" id="mCopy">複製 CSV</button></div><div id="memList"></div></div>
+</section>
+</main>
+<div id="toast" role="status"></div>
+<script>
+/* ===== 設定區：只需要改這裡 ===== */
+window.FIREBASE_CONFIG = {
+  apiKey: "AIzaSyDe9VUzz_fkrgQHaoZEFDnGBCW9b2msuEQ",
+  authDomain: "tpghpb-web.firebaseapp.com",
+  projectId: "tpghpb-web",
+  storageBucket: "tpghpb-web.firebasestorage.app",
+  messagingSenderId: "225491421728",
+  appId: "1:225491421728:web:ae5b0e4b4f05affad14a45"
+};
+/* 第一位管理員的 Gmail（要和 firestore.rules 裡的一樣）。之後可在「會員名冊」新增其他管理員 */
+window.ADMIN_EMAILS = ["jchang1023@gmail.com", "tpgh.pickleball@gmail.com"];
+/* ===== 設定區結束 ===== */
+</script>
+<script type="module">
+const V='10.12.2',B='https://www.gstatic.com/firebasejs/'+V+'/';
+try{
+  if(!window.FIREBASE_CONFIG.projectId){window.FB_MISSING=true;dispatchEvent(new Event('fb-missing'))}
+  else{
+  const {initializeApp}=await import(B+'firebase-app.js');
+  const A=await import(B+'firebase-auth.js');
+  const F=await import(B+'firebase-firestore.js');
+  const app=initializeApp(window.FIREBASE_CONFIG),auth=A.getAuth(app),fs=F.getFirestore(app);
+  A.setPersistence(auth,A.browserLocalPersistence).catch(()=>{});
+  const wrap=s=>({id:s.id,exists:s.exists(),data:()=>s.data(),metadata:s.metadata});
+  const dref=r=>({id:r.id,set:d=>F.setDoc(r,d),delete:()=>F.deleteDoc(r),get:async()=>wrap(await F.getDoc(r)),onSnapshot:(f,e)=>F.onSnapshot(r,s=>f(wrap(s)),e)});
+  const cref=(p,q)=>{const c=F.collection(fs,p);return {doc:id=>dref(id?F.doc(fs,p,id):F.doc(c)),
+    where:(a,o,v)=>cref(p,[...(q||[]),F.where(a,o,v)]),
+    onSnapshot:(f,e)=>F.onSnapshot(q?F.query(c,...q):c,s=>f({docs:s.docs.map(wrap),metadata:s.metadata}),e)}};
+  window.FB={
+    db:{doc:p=>dref(F.doc(fs,p)),collection:p=>cref(p)},
+    onAuth:f=>A.onAuthStateChanged(auth,f),
+    google:async()=>{const pv=new A.GoogleAuthProvider();pv.setCustomParameters({prompt:'select_account'});
+      try{return await A.signInWithPopup(auth,pv)}catch(e){if(e.code==='auth/popup-blocked'||e.code==='auth/operation-not-supported-in-this-environment')return A.signInWithRedirect(auth,pv);throw e}},
+    login:(e,p)=>A.signInWithEmailAndPassword(auth,e,p),
+    register:async(e,p,name)=>{const c=await A.createUserWithEmailAndPassword(auth,e,p);try{await A.updateProfile(c.user,{displayName:name})}catch(_){}return c},
+    reset:e=>A.sendPasswordResetEmail(auth,e),
+    logout:()=>A.signOut(auth)
+  };
+  A.getRedirectResult(auth).catch(()=>{});
+  dispatchEvent(new Event('fb-ready'));window.FB_READY=true;
+  }
+}catch(err){console.error(err);window.FB_FAIL=String(err);dispatchEvent(new Event('fb-fail'))}
+</script>
+<script>
+{
+const $=s=>document.querySelector(s);
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money=n=>'$'+Math.round(+n||0).toLocaleString('zh-TW');
+const pad=n=>String(n).padStart(2,'0');
+const ymd=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const today=ymd(new Date());
+const WK='日一二三四五六';
+let db=null,user=null,uid=null,authUser=null,admin=false,readonly=false,profLoaded=false,editId=null,regMode=false;
+const SEED={"intro": {"about": "台北創新匹克球隊由台北創新網路扶輪社（The Rotary e Club of Taipei Gathering Heart）社友與寶眷組成，第一階段開放報名。邀請1-2位匹克球教練，有系統打造基礎功，歡迎社友加入運動行列。", "bank": {"acct": "0933253650", "bank": "王道銀行", "branch": "營業部 0011", "code": "048", "holder": "張庭", "note": "匯款後請於匹克群告知姓名與帳號末五碼。"}, "facts": [{"k": "球敘開跑日", "v": "預計 12 月開始"}, {"k": "球敘時間", "v": "每週六或每週日 下午 2:00～5:00"}, {"k": "球敘地點", "v": "崇光禮堂"}, {"k": "報名人數", "v": "上限 16 人"}, {"k": "報名資格", "v": "本社社員及寶眷"}, {"k": "報名費用", "v": "年繳會費 $1,000＋場地分攤費 $2,000（匯款）"}], "fees": [{"amt": "$1,000", "item": "年繳會費", "note": "固定年繳"}, {"amt": "$2,000", "item": "場地分攤費", "note": "場地租金依人數分攤半年繳"}, {"amt": "$200", "item": "場地報名費（臨打）", "note": "非固定隊員單次參加"}, {"amt": "匯款", "item": "繳費方式", "note": "目前僅接受匯款，帳號見右方"}], "oath": "宣誓人在此莊嚴宣誓：\n\n我自願加入台北創新匹克球隊，\n認同球隊宗旨與核心價值。\n\n我願以健康為本、品格為先、團隊為榮，\n遵守球隊規範，尊重每一位隊友，\n積極學習、持續精進球技。\n\n我承諾，將球敘時間優先排入個人工作與生活行程，\n珍惜每一次團練與交流，\n不輕易缺席、不輕易脫隊，\n與隊友共同成長。\n\n我願以匹克球結交朋友，以運動促進健康，\n以公益回饋社會，\n實踐扶輪「服務超我」的精神，\n讓每一次揮拍，都成為影響他人的力量。\n\n我願與所有隊友攜手前行，\n共同打造一支充滿紀律、熱情、健康、\n公益與影響力的球隊。\n\n揮出創新，公益得分！\n健康同行，服務同行！", "org": [{"lv": 1, "name": "", "note": "", "role": "台北創新網路扶輪社"}, {"lv": 2, "name": "PP sJoe", "note": "", "role": "榮董"}, {"lv": 2, "name": "PP Alison", "note": "", "role": "隊長"}, {"lv": 2, "name": "PE SamLu", "note": "", "role": "副隊長"}, {"lv": 3, "name": "專業匹克球教練（1-2位）", "note": "", "role": "教練"}, {"lv": 3, "name": "Yvonne", "note": "會費收支、對帳", "role": "球隊經理"}, {"lv": 4, "name": "參與球隊活動", "note": "", "role": "一般會員"}], "tag": "揮出創新，公益得分！ 健康同行，服務同行！"}, "main": {"amount": 1000, "period": "2026/11–2027/10", "venueFee": 2000}};
+const S={admins:[],roles:[],members:[],sessions:[],signups:[],fees:[],ledger:[],surveys:[],responses:[],config:{}};
+function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('on'),2200)}
+function status(t){const e=$('#status');e.hidden=!t;e.textContent=t||''}
+async function save(ref,data,ok){
+  if(!db){toast('尚未連線');return false}
+  try{await ref.set(data);if(ok)toast(ok);return true}
+  catch(e){console.error(e);toast(e.code==='permission-denied'?'你沒有修改權限':e.code==='unavailable'?'網路不穩，請稍後再試':'儲存失敗，請再試一次');return false}
+}
+async function del(ref,ok){if(!db)return;try{await ref.delete();if(ok)toast(ok)}catch(e){toast('刪除失敗')}}
+
+/* routing */
+const TABS=['intro','profile','sessions','fees','survey','finance','stats','members'];
+function route(){let h=location.hash.slice(1);if(!TABS.includes(h)||(h==='members'&&!admin)||(!uid&&h!=='profile')||(h==='survey'&&$('#navSurvey').hidden))h='intro';
+  document.querySelectorAll('section').forEach(s=>s.classList.toggle('on',s.id===h));
+  document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('on',a.dataset.t===h))}
+addEventListener('hashchange',route);route();
+
+/* helpers */
+const memName=id=>{const m=S.members.find(x=>x.id===id);return m?m.name:(S.signups.find(x=>x.id===id)?.name||'')};
+const myMember=()=>S.members.find(m=>m.id===uid);
+function count(sid){let n=0,names=[];for(const s of S.signups){const it=s.items&&s.items[sid];if(it){n+=(+it.n||1);names.push({id:s.id,name:s.name||'會員',n:+it.n||1})}}return{n,names}}
+function bars(rows,fmt=v=>v){const max=Math.max(1,...rows.map(r=>r[1]));return rows.length?rows.map(([k,v])=>`<div class="bar"><span>${esc(k)}</span><div><i style="width:${v/max*100}%"></i></div><span class="num">${esc(fmt(v))}</span></div>`).join(''):'<p class="mut">尚無資料</p>'}
+const dateBox=d=>{const x=new Date(d+'T00:00');return `<div class="date"><span>${x.getMonth()+1} 月</span><b class="num">${x.getDate()}</b><span>週${WK[x.getDay()]}</span></div>`};
+
+/* render */
+function render(){
+  document.querySelectorAll('[data-admin]').forEach(e=>e.hidden=!admin);
+  document.querySelectorAll('nav a').forEach(a=>{if(!['intro','profile','members','survey'].includes(a.dataset.t))a.hidden=!uid});
+  $('#navMembers').hidden=!admin;$('#navSurvey').hidden=!uid||(!admin&&!S.surveys.some(x=>x.open));route();renderAuth();
+  renderIntro();renderSessions();renderSurveys();renderFees();renderFinance();renderStats();if(admin)renderMembers();
+  const opts=S.members.slice().sort((a,b)=>(a.name||'').localeCompare(b.name||'','zh-Hant')).map(m=>`<option value="${esc(m.id)}">${esc(m.name)}（${esc(m.rel||'')}）</option>`).join('');
+  const fm=$('#feeMem');const v=fm.value;fm.innerHTML=opts||'<option value="">請先建立會員</option>';if(v)fm.value=v;
+  if(!$('#feePeriod').value)$('#feePeriod').value=S.config.period||'';
+  if(!$('#feeAmt').value)feeDefault();
+  if(!profLoaded&&myMember()){fillProfile(myMember());profLoaded=true}
+}
+function sessCard(s,past){
+  const {n,names}=count(s.id),cap=+s.cap||0,full=cap&&n>=cap;
+  const mine=S.signups.find(x=>x.id===uid)?.items?.[s.id];
+  const pct=cap?Math.min(100,n/cap*100):0;
+  let act='';
+  if(!past&&uid&&!readonly){
+    act=mine?`<button class="ghost" data-cancel="${esc(s.id)}">取消報名</button><span class="mut">已報名 ${esc(mine.n)} 人</span>`
+      :`<select id="g_${esc(s.id)}" aria-label="人數"><option value="1">本人</option><option value="2">本人 +1</option><option value="3">本人 +2</option></select><button class="ball" data-join="${esc(s.id)}" ${full?'disabled':''}>${full?'已額滿':'我要報名'}</button>`;
+  }
+  let adm='';
+  if(admin){adm=`<details style="margin-top:8px" data-keep="${esc(s.id)}"><summary>管理：代為登記多人</summary>${(()=>{const yet=S.members.filter(m=>!S.signups.find(x=>x.id===m.id)?.items?.[s.id]).sort((a,b)=>(a.name||'').localeCompare(b.name||'','zh-Hant'));
+    return yet.length?`<div class="row" style="margin:4px 0 8px"><button type="button" class="ghost" style="min-height:36px;padding:4px 12px" data-pxall="${esc(s.id)}">全選</button><span class="mut">剩餘名額 ${cap?Math.max(0,cap-n):'不限'}</span></div><div class="opts" id="px_${esc(s.id)}">${yet.map(m=>`<label class="opt"><input type="checkbox" value="${esc(m.id)}"><span>${esc(m.name)}</span></label>`).join('')}</div>`:'<p class="mut">所有會員都已登記</p>'})()}
+    <div class="row" style="margin-top:10px"><button class="ghost" data-proxy="${esc(s.id)}">登記勾選的會員</button><button class="del" data-dsess="${esc(s.id)}">刪除場次</button></div></details>`}
+  return `<div class="card sess">${dateBox(s.date)}<div>
+  <div class="row" style="justify-content:space-between"><h3 style="margin:0"><span class="num" style="font-size:24px">${esc(s.start)}–${esc(s.end)}</span> · ${esc(s.venue)}</h3><span class="mut">每人 ${money(s.fee)}</span></div>
+  ${s.note?`<div class="mut">${esc(s.note)}</div>`:''}
+  <div class="meter"><i class="${full?'full':''}" style="width:${pct}%"></i></div>
+  <div class="row" style="justify-content:space-between"><span><b class="num" style="font-size:22px">${n}</b> / ${cap} 人</span><div class="row">${act}</div></div>
+  <div class="chips">${names.map(x=>`<span>${esc(x.name)}${x.n>1?' +'+(x.n-1):''}${admin?` <button class="del" style="min-height:24px;padding:0 6px;border:0" aria-label="移除" data-kick="${esc(s.id)}|${esc(x.id)}">×</button>`:''}</span>`).join('')}</div>${adm}</div></div>`;
+}
+const lines=t=>String(t||'').split('\n').map(l=>l.trim()).filter(Boolean).map(l=>l.split(/[｜|]/).map(x=>x.trim()));
+function parseAgenda(t){const out=[];for(const l of String(t).split('\n').map(x=>x.trim()).filter(Boolean)){
+  if(l.startsWith('##')){const [title,tag]=l.replace(/^#+\s*/,'').split(/[｜|]/);out.push({title:(title||'').trim(),tag:(tag||'').trim(),items:[]})}
+  else if(out.length)out[out.length-1].items.push(l.replace(/^[-•*]\s*/,''))}return out}
+function renderIntro(){
+  const I=S.intro||{};
+  $('#iTag').textContent=I.tag||'一起揮拍、一起健康、一起成長！';
+  $('#iAbout').textContent=I.about||'';
+  $('#iFacts').innerHTML=(I.facts||[]).map(f=>`<div><dt>${esc(f.k)}</dt><dd>${esc(f.v)}</dd></div>`).join('')||'<p class="mut">尚未設定</p>';
+  const lv={};(I.org||[]).forEach(o=>{(lv[o.lv]=lv[o.lv]||[]).push(o)});
+  const keys=Object.keys(lv).sort((a,b)=>a-b);
+  const holders=r=>S.roles.filter(x=>x.role===r).map(x=>x.name);
+  const nodeBody=o=>{const h=holders(o.role);if(h.length)return `<span class="rl">${esc(o.role)}</span><b>${h.length>6?h.length+' 位':h.map(esc).join('、')}</b>`;
+    return o.name?`<span class="rl">${esc(o.role)}</span><b>${esc(o.name)}</b>`:`<b>${esc(o.role)}</b>`};
+  $('#iOrg').innerHTML=keys.length?keys.map((k,i)=>`<div class="lv">${lv[k].map(o=>`<div class="node ${i===0?'top':''}">${nodeBody(o)}${o.note?`<small>${esc(o.note)}</small>`:''}</div>`).join('')}</div>`).join(''):'<p class="mut">尚未設定</p>';
+  const fees=I.fees||[];
+  $('#iFees').innerHTML=fees.length?`<table><tbody>${fees.map(f=>`<tr><td><b>${esc(f.item)}</b>${f.note?`<div class="mut">${esc(f.note)}</div>`:''}</td><td class="r num" style="font-size:20px">${esc(f.amt||'待公布')}</td></tr>`).join('')}</tbody></table>`:'<p class="mut">尚未設定</p>';
+  const op=String(I.oath||'').split(/\n\s*\n/).map(x=>x.trim()).filter(Boolean);
+  $('#iOath').hidden=!op.length;
+  $('#iOath').innerHTML=op.length?`<h3>隊員入隊宣示誓詞</h3>${op.map((x,i)=>`<p class="${i===op.length-1?'cry':''}">${esc(x).replace(/\n/g,'<br>')}</p>`).join('')}<p class="mut" style="margin-top:14px">隊員可在「<a href="#profile">會員資料</a>」勾選完成線上宣誓。</p>`:'';
+  const B=I.bank||{};
+  $('#iBank').innerHTML=`<h3>匯款資訊</h3>${B.acct?`<div class="acct num">${esc(B.acct)}</div><dl><div><dt>銀行</dt><dd>${esc(B.bank)}${B.code?'（'+esc(B.code)+'）':''} ${esc(B.branch)}</dd></div><div><dt>戶名</dt><dd>${esc(B.holder)}</dd></div></dl><button type="button" id="copyAcct">複製帳號</button>`:'<p>匯款帳號將由管理員公布，請稍候或洽隊長。</p>'}${B.note?`<p style="margin:12px 0 0;font-size:14px">${esc(B.note)}</p>`:''}`;
+  const ca=$('#copyAcct');if(ca)ca.onclick=async()=>{try{await navigator.clipboard.writeText(String(B.code?B.code+' ':'')+B.acct);toast('已複製帳號')}catch(_){toast('無法複製，請手動抄寫')}};
+  if(admin&&!S.introLoaded&&S.intro){S.introLoaded=true;
+    $('#eTag').value=I.tag||'';$('#eAbout').value=I.about||'';
+    $('#eFacts').value=(I.facts||[]).map(f=>f.k+'｜'+f.v).join('\n');
+    $('#eOrg').value=(I.org||[]).map(o=>[o.lv,o.role,o.name,o.note].join('｜')).join('\n');
+    $('#eFees').value=fees.map(f=>[f.item,f.amt,f.note].join('｜')).join('\n');
+    $('#eOath').value=I.oath||'';
+    $('#eBank').value=B.bank||'';$('#eCode').value=B.code||'';$('#eBranch').value=B.branch||'';$('#eAcct').value=B.acct||'';$('#eHolder').value=B.holder||'';$('#eBankNote').value=B.note||''}
+}
+$('#fIntro').addEventListener('submit',async e=>{e.preventDefault();
+  const d={tag:$('#eTag').value.trim(),about:$('#eAbout').value.trim(),
+    facts:lines($('#eFacts').value).map(([k,v])=>({k,v:v||''})),
+    org:lines($('#eOrg').value).map(([l,role,name,note])=>({lv:+l||1,role:role||'',name:name||'',note:note||''})),
+    fees:lines($('#eFees').value).map(([item,amt,note])=>({item,amt:amt||'',note:note||''})),
+    oath:$('#eOath').value.trim(),
+    bank:{bank:$('#eBank').value.trim(),code:$('#eCode').value.trim(),branch:$('#eBranch').value.trim(),acct:$('#eAcct').value.trim(),holder:$('#eHolder').value.trim(),note:$('#eBankNote').value.trim()}};
+  await save(db.doc('config/intro'),d,'介紹內容已更新')});
+function keepState(root,fn){const open=new Set([...root.querySelectorAll('details[data-keep][open]')].map(d=>d.dataset.keep));
+  const chk=new Set([...root.querySelectorAll('.opts input:checked')].map(i=>i.closest('.opts').id+'|'+i.value));fn();
+  root.querySelectorAll('details[data-keep]').forEach(d=>{if(open.has(d.dataset.keep))d.open=true});
+  root.querySelectorAll('.opts input').forEach(i=>{if(chk.has(i.closest('.opts').id+'|'+i.value))i.checked=true})}
+function renderSessions(){keepState($('#sessList'),()=>{
+  const all=S.sessions.slice().sort((a,b)=>(a.date+a.start).localeCompare(b.date+b.start));
+  const up=all.filter(s=>s.date>=today),past=all.filter(s=>s.date<today).reverse();
+  let pre='';
+  if(uid&&!myMember()&&!readonly)pre='<div class="note">報名前請先到「<a href="#profile">會員資料</a>」填寫。</div>';
+  $('#sessList').innerHTML=pre+(up.length?up.map(s=>sessCard(s,false)).join(''):'<div class="card mut">目前沒有開放報名的場次。'+(admin?'用上方「新增場次」建立，可一次建立每週固定場次。':'')+'</div>');
+  $('#sessPast').innerHTML=past.length?past.slice(0,30).map(s=>sessCard(s,true)).join(''):'<p class="mut">尚無過去場次</p>';})
+}
+function renderSurveys(){
+  const list=S.surveys.slice().sort((a,b)=>(b.at||'').localeCompare(a.at||''));
+  const myR=S.responses.find(r=>r.id===uid)?.s||{};
+  $('#survList').innerHTML=list.length?list.map(sv=>{
+    const done=myR[sv.id];const qs=sv.qs||[];
+    let body;
+    if(!sv.open)body='<p class="mut">此問卷已結束。</p>';
+    else if(done)body='<p class="paid">✓ 你已填寫，感謝！</p><button class="ghost" data-redo="'+esc(sv.id)+'">重新填寫</button>';
+    else body=`<form data-ans="${esc(sv.id)}" style="display:grid;gap:14px">${qs.map((q,i)=>{
+      const nm=`q_${esc(sv.id)}_${i}`;
+      if(q.type==='text')return `<label>${i+1}. ${esc(q.t)}<textarea name="${nm}" style="min-height:70px"></textarea></label>`;
+      const tp=q.type==='multi'?'checkbox':'radio';
+      return `<fieldset style="border:0;padding:0;margin:0"><legend style="margin-bottom:6px">${i+1}. ${esc(q.t)} <span class="mut">${q.type==='multi'?'（可複選，請勾選）':'（單選）'}</span></legend><div class="opts">${(q.opts||[]).map(o=>`<label class="opt"><input type="${tp}" name="${nm}" value="${esc(o)}" ${tp==='radio'?'required':''}><span>${esc(o)}</span></label>`).join('')}</div></fieldset>`}).join('')}<div><button ${readonly||!uid?'disabled':''}>送出</button></div></form>`;
+    let res='';
+    if(admin){
+      const rs=S.responses.map(r=>({name:r.name,a:r.s&&r.s[sv.id]})).filter(r=>r.a);
+      res=`<details style="margin-top:12px"><summary>結果（${rs.length} 份）</summary>${qs.map((q,i)=>{
+        if(q.type==='text')return `<p><b>${esc(q.t)}</b></p><ul>${rs.filter(r=>r.a.a[i]).map(r=>`<li>${esc(r.a.a[i])} <span class="mut">— ${esc(r.name)}</span></li>`).join('')||'<li class="mut">無</li>'}</ul>`;
+        const c={};(q.opts||[]).forEach(o=>c[o]=0);rs.forEach(r=>[].concat(r.a.a[i]||[]).forEach(v=>c[v]=(c[v]||0)+1));
+        return `<p><b>${esc(q.t)}</b></p>${bars(Object.entries(c),v=>v+' 票')}`}).join('')}
+        <div class="row"><button class="ghost" data-toggle="${esc(sv.id)}">${sv.open?'結束問卷':'重新開放'}</button><button class="del" data-dsurv="${esc(sv.id)}">刪除問卷</button></div></details>`;
+    }
+    return `<div class="card"><h3>${esc(sv.title)}</h3>${sv.desc?`<p class="mut">${esc(sv.desc)}</p>`:''}${body}${res}</div>`}).join(''):'<div class="card mut">目前沒有問卷。</div>';
+}
+const isA=i=>i==='年繳會費'||i==='年費',isV=i=>i==='場地分攤費'||i==='場地費';
+function feeSt(id){const fs=S.fees.filter(f=>f.memberId===id&&f.period===(S.config.period||''));return {a:fs.some(f=>isA(f.item)),v:fs.some(f=>isV(f.item))}}
+const mark=(ok,t)=>`<b class="${ok?'paid':'unpaid'}">${t}${ok?'✓':'○'}</b>`;
+function renderFees(){
+  const period=S.config.period||'',amt=+S.config.amount||0,vf=+S.config.venueFee||0;
+  const fees=S.fees.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  const shown=admin?fees:fees.filter(f=>f.memberId===uid);
+  const inPeriod=S.fees.filter(f=>f.period===period);
+  const sts=S.members.map(m=>feeSt(m.id));const my=feeSt(uid);
+  $('#feeKpi').innerHTML=`<div class="kpi"><span class="mut">本期</span><b class="num" style="font-size:26px">${esc(period||'未設定')}</b></div><div class="kpi"><span class="mut">年繳會費</span><b class="num">${money(amt)}</b></div><div class="kpi"><span class="mut">場地分攤費</span><b class="num">${money(vf)}</b></div><div class="kpi"><span class="mut">每人合計應繳</span><b class="num">${money(amt+vf)}</b><span class="mut">繳費方式：匯款</span></div>`+
+   (admin?`<div class="kpi"><span class="mut">會費已繳</span><b class="num">${sts.filter(x=>x.a).length} / ${S.members.length}</b></div><div class="kpi"><span class="mut">場地費已繳</span><b class="num">${sts.filter(x=>x.v).length} / ${S.members.length}</b></div><div class="kpi"><span class="mut">本期已收</span><b class="num">${money(inPeriod.reduce((s,f)=>s+(+f.amount||0),0))}</b></div>`
+   :`<div class="kpi"><span class="mut">我的繳費狀態</span><div style="font-size:20px;margin-top:6px">${mark(my.a,'會費 ')}　${mark(my.v,'場地費 ')}</div></div>`);
+  $('#feeStatusCard').hidden=!admin;
+  if(admin){$('#feeStatusTitle').textContent=`${period||'本期'}繳費狀況`;
+    const ms=S.members.slice().sort((a,b)=>{const x=feeSt(a.id),y=feeSt(b.id);return (x.a+x.v)-(y.a+y.v)});
+    $('#feeStatus').innerHTML=ms.length?`<div class="chips">${ms.map(m=>{const t=feeSt(m.id);return `<span>${esc(m.name)}　${mark(t.a,'會費')} ${mark(t.v,'場地')}</span>`}).join('')}</div>`:'<p class="mut">尚無會員</p>'}
+  $('#feeList').innerHTML=shown.length?`<table class="stack"><thead><tr><th>日期</th><th>會員</th><th>項目</th><th>期別</th><th class="r">金額</th><th>方式</th><th>備註</th>${admin?'<th></th>':''}</tr></thead><tbody>${shown.map(f=>`<tr><td>${esc(f.date)}</td><td>${esc(f.name)}</td><td>${esc(f.item)}</td><td>${esc(f.period)}</td><td class="r num">${money(f.amount)}</td><td>${esc(f.way)}</td><td>${esc(f.note)}</td>${admin?`<td><button class="del" data-dfee="${esc(f.id)}">刪除</button></td>`:''}</tr>`).join('')}</tbody></table>`:'<p class="mut">尚無繳費紀錄</p>';
+}
+function finRows(){
+  return [...S.fees.map(f=>({date:f.date,t:'in',cat:'會費・'+(f.item||''),desc:(f.name||'')+' '+(f.period||''),amt:+f.amount||0,src:'fee'})),
+   ...S.ledger.map(l=>({id:l.id,date:l.date,t:l.type,cat:l.cat,desc:l.desc,amt:+l.amount||0,src:'led'}))].sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+}
+function renderFinance(){
+  const rows=finRows();let bal=0;rows.forEach(r=>{bal+=r.t==='in'?r.amt:-r.amt;r.bal=bal});
+  const inc=rows.filter(r=>r.t==='in').reduce((s,r)=>s+r.amt,0),out=rows.filter(r=>r.t==='out').reduce((s,r)=>s+r.amt,0);
+  const feeInc=rows.filter(r=>r.src==='fee').reduce((s,r)=>s+r.amt,0);
+  $('#finKpi').innerHTML=`<div class="kpi"><span class="mut">目前結餘</span><b class="num" style="color:${bal<0?'var(--warn)':'var(--ok)'}">${money(bal)}</b></div><div class="kpi"><span class="mut">總收入</span><b class="num">${money(inc)}</b><span class="mut">含會費 ${money(feeInc)}</span></div><div class="kpi"><span class="mut">總支出</span><b class="num">${money(out)}</b></div>`;
+  const cats={};rows.filter(r=>r.t==='out').forEach(r=>cats[r.cat]=(cats[r.cat]||0)+r.amt);
+  $('#finCat').innerHTML=bars(Object.entries(cats).sort((a,b)=>b[1]-a[1]),money);
+  $('#finList').innerHTML=rows.length?`<div class="scroll"><table><thead><tr><th>日期</th><th>類別</th><th>說明</th><th class="r">收入</th><th class="r">支出</th><th class="r">結餘</th>${admin?'<th></th>':''}</tr></thead><tbody>${rows.slice().reverse().map(r=>`<tr><td style="white-space:nowrap">${esc(r.date)}</td><td>${esc(r.cat)}</td><td>${esc(r.desc)}</td><td class="r num">${r.t==='in'?money(r.amt):''}</td><td class="r num">${r.t==='out'?money(r.amt):''}</td><td class="r num">${money(r.bal)}</td>${admin?`<td>${r.src==='led'?`<button class="del" data-dled="${esc(r.id)}">刪除</button>`:'<span class="mut">會費頁</span>'}</td>`:''}</tr>`).join('')}</tbody></table></div><p class="mut">會費收入自動從「會費」頁帶入。</p>`:'<p class="mut">尚無收支紀錄</p>';
+}
+function renderStats(){
+  const past=S.sessions.filter(s=>s.date<=today).sort((a,b)=>a.date.localeCompare(b.date));
+  const att=past.map(s=>count(s.id).n);const avg=att.length?(att.reduce((a,b)=>a+b,0)/att.length):0;
+  const month=today.slice(0,7);
+  $('#stKpi').innerHTML=(admin?`<div class="kpi"><span class="mut">會員數</span><b class="num">${S.members.length}</b></div>`:'')+
+   `<div class="kpi"><span class="mut">本月場次</span><b class="num">${S.sessions.filter(s=>s.date.startsWith(month)).length}</b></div><div class="kpi"><span class="mut">已辦場次</span><b class="num">${past.length}</b></div><div class="kpi"><span class="mut">平均出席</span><b class="num">${avg.toFixed(1)}</b></div>`;
+  $('#stSess').innerHTML=bars(past.slice(-10).map(s=>[s.date.slice(5)+' '+(s.venue||'').slice(0,4),count(s.id).n]),v=>v+' 人');
+  const pastIds=new Set(past.map(s=>s.id));
+  $('#stTop').innerHTML=bars(S.signups.map(s=>[s.name||'會員',Object.keys(s.items||{}).filter(k=>pastIds.has(k)).length]).filter(r=>r[1]).sort((a,b)=>b[1]-a[1]).slice(0,10),v=>v+' 次');
+  if(admin){const g=k=>{const c={};S.members.forEach(m=>{const v=m[k]||'未填';c[v]=(c[v]||0)+1});return Object.entries(c).sort((a,b)=>b[1]-a[1])};
+    $('#stRel').innerHTML=bars(g('rel'),v=>v+' 人');$('#stLvl').innerHTML=bars(g('level'),v=>v+' 人');
+    const tc={'週六下午':0,'週日下午':0,'平日晚間':0,'其他':0};S.members.forEach(m=>(m.prefTimes||[]).forEach(t=>tc[t]=(tc[t]||0)+1));
+    const others=S.members.filter(m=>m.prefOther).map(m=>`<span>${esc(m.name)}：${esc(m.prefOther)}</span>`).join('');
+    $('#stTime').innerHTML=bars(Object.entries(tc),v=>v+' 人')+(others?`<p class="mut" style="margin:10px 0 4px">其他時段</p><div class="chips">${others}</div>`:'');
+    const fc={'每週多次':0,'每週一次':0,'兩週一次':0};S.members.forEach(m=>{if(m.freq)fc[m.freq]=(fc[m.freq]||0)+1});
+    const nf=S.members.filter(m=>!m.freq).length;$('#stFreq').innerHTML=bars(Object.entries(fc).concat(nf?[['未填',nf]]:[]),v=>v+' 人')}
+}
+const roleList=()=>[...new Set((S.intro?.org||[]).map(o=>o.role).filter(Boolean))];
+function roleOpts(cur){const rs=roleList();if(cur&&!rs.includes(cur))rs.push(cur);return '<option value="">（無）</option>'+rs.map(r=>`<option${r===cur?' selected':''}>${esc(r)}</option>`).join('')}
+async function syncRoles(list){const next=list.filter(m=>m.role).map(m=>({id:m.id,name:m.name||'',role:m.role})).sort((a,b)=>a.id<b.id?-1:1);
+  if(JSON.stringify(next)!==JSON.stringify(S.roles))await save(db.doc('config/roles'),{list:next})}
+document.addEventListener('change',async e=>{const sel=e.target.closest('select[data-role]');if(!sel)return;
+  const m=S.members.find(x=>x.id===sel.dataset.role);if(!m)return;const d={...m};delete d.id;d.role=sel.value;
+  if(await save(db.collection('members').doc(m.id),d,sel.value?`已設為「${sel.value}」`:'已清除職位'))await syncRoles(S.members.map(x=>x.id===m.id?{...x,role:sel.value}:x))});
+function renderMembers(){renderAdmins();
+  {const v=$('#mRole').value;$('#mRole').innerHTML=roleOpts(v);$('#mRole').value=v}
+  const q=$('#mSearch').value.trim().toLowerCase();
+  const att=id=>Object.keys(S.signups.find(s=>s.id===id)?.items||{}).length;
+  const ms=S.members.filter(m=>!q||[m.name,m.nick,m.phone,m.rel,m.email,m.ref].join(' ').toLowerCase().includes(q)).sort((a,b)=>(a.name||'').localeCompare(b.name||'','zh-Hant'));
+  $('#memList').innerHTML=ms.length?`<table class="stack"><thead><tr><th>姓名</th><th>球隊職位</th><th>身分</th><th>程度</th><th>手機</th><th>Email</th><th>介紹人</th><th>宣誓</th><th>偏好時間／頻率</th><th>本期繳費</th><th class="r">報名次數</th><th></th></tr></thead><tbody>${ms.map(m=>`<tr><td><b>${esc(m.name)}</b>${m.nick?` <span class="mut">${esc(m.nick)}</span>`:''}${m.self?'':' <span class="mut">代建</span>'}</td><td><select class="roleSel" data-role="${esc(m.id)}" aria-label="球隊職位" style="min-height:36px;padding:4px 8px">${roleOpts(m.role)}</select></td><td>${esc(m.rel)}</td><td>${esc(m.level)}</td><td>${esc(m.phone)}</td><td>${esc(m.email)}</td><td>${esc(m.ref)}</td><td>${m.oathAt?'<span class="paid">✓ '+esc(m.oathAt)+'</span>':'<span class="mut">—</span>'}</td><td>${esc(prefText(m))}${m.freq?`<div class="mut">${esc(m.freq)}</div>`:''}</td><td>${(t=>mark(t.a,'會費')+' '+mark(t.v,'場地'))(feeSt(m.id))}</td><td class="r num">${att(m.id)}</td><td><div class="row">${m.self?'':`<button class="ghost" style="min-height:36px;padding:4px 10px" data-emem="${esc(m.id)}">編輯</button>`}<button class="del" data-dmem="${esc(m.id)}">刪除</button></div></td></tr>`).join('')}</tbody></table>`:'<p class="mut">尚無會員</p>';
+}
+const PF={name:'pName',nick:'pNick',rel:'pRel',ref:'pRef',phone:'pPhone',email:'pEmail',gender:'pGender',level:'pLevel',paddle:'pPaddle',size:'pSize',emer:'pEmer',emerPhone:'pEmerPhone',note:'pNote'};
+function getPref(p){const t=[...document.querySelectorAll(`input[name=${p}T]:checked`)].map(i=>i.value);return {prefTimes:t,prefOther:t.includes('其他')?$('#'+p+'OtherTime').value.trim():'',freq:document.querySelector(`input[name=${p}F]:checked`)?.value||''}}
+function setPref(p,m){document.querySelectorAll(`input[name=${p}T]`).forEach(i=>i.checked=(m.prefTimes||[]).includes(i.value));$('#'+p+'OtherTime').value=m.prefOther||'';document.querySelectorAll(`input[name=${p}F]`).forEach(i=>i.checked=i.value===m.freq)}
+const prefText=m=>[...(m.prefTimes||[]).filter(x=>x!=='其他'),m.prefOther].filter(Boolean).join('、');
+function fillProfile(m){setPref('p',m);for(const k in PF)$('#'+PF[k]).value=m[k]||'';$('#pConsent').checked=!!m.consent;$('#pOath').checked=!!m.oathAt;$('#pMsg').textContent=m.updatedAt?'上次更新 '+m.updatedAt.slice(0,10):''}
+
+/* events */
+async function saveProfile(){if(!uid){toast('請先登入');return}
+  const old=myMember()||{};const d={...old};delete d.id;for(const k in PF)d[k]=$('#'+PF[k]).value.trim();
+  Object.assign(d,getPref('p'),{oathAt:$('#pOath').checked?(old.oathAt||today):'',consent:true,self:true,updatedAt:new Date().toISOString(),joinedAt:old.joinedAt||today});
+  if(await save(db.collection('members').doc(uid),d,'資料已儲存')){
+    const sg=S.signups.find(s=>s.id===uid);if(sg&&sg.name!==d.name){const c=JSON.parse(JSON.stringify(sg));delete c.id;c.name=d.name;await save(db.collection('signups').doc(uid),c)}}}
+$('#fProf').addEventListener('submit',e=>{e.preventDefault();if(uid)saveProfile()});
+$('#fSess').addEventListener('submit',async e=>{e.preventDefault();
+  const w=Math.max(1,Math.min(26,+$('#sWeeks').value||1));const base=new Date($('#sDate').value+'T00:00');
+  for(let i=0;i<w;i++){const d=new Date(base);d.setDate(d.getDate()+7*i);
+    await save(db.collection('sessions').doc(),{date:ymd(d),start:$('#sStart').value,end:$('#sEnd').value,venue:$('#sVenue').value.trim(),cap:+$('#sCap').value,fee:+$('#sFee').value||0,note:$('#sNote').value.trim()})}
+  toast(`已建立 ${w} 個場次`);});
+async function setSignup(memberId,name,sid,n){
+  const cur=S.signups.find(s=>s.id===memberId);const doc=cur?JSON.parse(JSON.stringify(cur)):{items:{}};delete doc.id;doc.name=name||doc.name||'會員';doc.items=doc.items||{};
+  if(n)doc.items[sid]={n,at:new Date().toISOString()};else delete doc.items[sid];
+  return save(db.collection('signups').doc(memberId),doc,n?'報名成功':'已取消');
+}
+document.addEventListener('click',async e=>{const b=e.target.closest('button');if(!b)return;const d=b.dataset;
+  if(d.join){const m=myMember();if(!m){location.hash='profile';toast('請先填寫會員資料');return}
+    const s=S.sessions.find(x=>x.id===d.join),n=+$('#g_'+d.join).value||1;if(s.cap&&count(s.id).n+n>s.cap){toast('名額不足');return}
+    b.disabled=true;await setSignup(uid,m.name,d.join,n)}
+  else if(d.cancel){b.disabled=true;await setSignup(uid,myMember()?.name,d.cancel,0)}
+  else if(d.pxall){document.querySelectorAll('#px_'+d.pxall+' input').forEach(i=>i.checked=true)}
+  else if(d.proxy){const ids=[...document.querySelectorAll('#px_'+d.proxy+' input:checked')].map(i=>i.value);if(!ids.length){toast('請先勾選會員');return}
+    const s=S.sessions.find(x=>x.id===d.proxy);if(s.cap&&count(s.id).n+ids.length>s.cap){toast(`超過名額，最多還能登記 ${Math.max(0,s.cap-count(s.id).n)} 人`);return}
+    b.disabled=true;let ok=0;for(const mid of ids){if(await setSignup(mid,memName(mid),d.proxy,1))ok++}b.disabled=false;toast(`已登記 ${ok} 人`)}
+  else if(d.kick){const [sid,mid]=d.kick.split('|');await setSignup(mid,memName(mid),sid,0)}
+  else if(d.dsess&&b.dataset.sure){await del(db.collection('sessions').doc(d.dsess),'場次已刪除')}
+  else if(d.dsurv&&b.dataset.sure){await del(db.collection('surveys').doc(d.dsurv),'問卷已刪除')}
+  else if(d.dfee&&b.dataset.sure){await del(db.collection('fees').doc(d.dfee),'已刪除')}
+  else if(d.dled&&b.dataset.sure){await del(db.collection('ledger').doc(d.dled),'已刪除')}
+  else if(d.dmem&&b.dataset.sure){const id=d.dmem;await del(db.collection('members').doc(id),'會員已刪除');await syncRoles(S.members.filter(x=>x.id!==id))}
+  else if(d.dsess||d.dsurv||d.dfee||d.dled||d.dmem){b.dataset.sure='1';b.textContent='再按一次確認';setTimeout(()=>{if(b.isConnected){delete b.dataset.sure;b.textContent='刪除'}},3000)}
+  else if(d.toggle){const sv=S.surveys.find(x=>x.id===d.toggle);const c={...sv};delete c.id;c.open=!sv.open;await save(db.collection('surveys').doc(sv.id),c,c.open?'已開放':'已結束')}
+  else if(d.redo){const r=S.responses.find(x=>x.id===uid);const c=JSON.parse(JSON.stringify(r));delete c.id;delete c.s[d.redo];await save(db.collection('responses').doc(uid),c)}
+  else if(d.emem){const m=S.members.find(x=>x.id===d.emem);editId=m.id;for(const [k,id] of Object.entries({name:'mName',rel:'mRel',ref:'mRef',phone:'mPhone',email:'mEmail',level:'mLevel',size:'mSize',note:'mNote'}))$('#'+id).value=m[k]||'';
+    setPref('m',m);$('#mRole').innerHTML=roleOpts(m.role);$('#mRole').value=m.role||'';$('#mBox').open=true;$('#mBtn').textContent='儲存修改';$('#mCancel').hidden=false;$('#mSum').textContent='編輯會員：'+m.name;$('#mBox').scrollIntoView({behavior:'smooth'})}
+});
+$('#fSurv').addEventListener('submit',async e=>{e.preventDefault();
+  const qs=$('#qBody').value.split('\n').map(l=>l.trim()).filter(Boolean).map(l=>{const m=l.match(/^(單選|多選|簡答)\s*[:：]\s*(.*)$/);const type=m?{單選:'single',多選:'multi',簡答:'text'}[m[1]]:'text';const rest=m?m[2]:l;const [t,o]=rest.split('|');
+    return {t:t.trim(),type:o&&type!=='text'?type:'text',opts:o?o.split(/[,，、]/).map(x=>x.trim()).filter(Boolean):[]}});
+  if(!qs.length)return;
+  if(await save(db.collection('surveys').doc(),{title:$('#qTitle').value.trim(),desc:$('#qDesc').value.trim(),qs,open:true,at:new Date().toISOString()},'問卷已發布'))e.target.reset()});
+document.addEventListener('submit',async e=>{const f=e.target.closest('form[data-ans]');if(!f)return;e.preventDefault();
+  const sid=f.dataset.ans,sv=S.surveys.find(x=>x.id===sid),fd=new FormData(f);
+  const a=sv.qs.map((q,i)=>{const nm=`q_${sid}_${i}`;return q.type==='multi'?fd.getAll(nm):(fd.get(nm)||'')});
+  const cur=S.responses.find(r=>r.id===uid);const doc=cur?JSON.parse(JSON.stringify(cur)):{s:{}};delete doc.id;doc.s=doc.s||{};
+  doc.name=myMember()?.name||doc.name||'會員';doc.s[sid]={a,at:new Date().toISOString()};
+  await save(db.collection('responses').doc(uid),doc,'已送出，感謝填寫')});
+$('#fCfg').addEventListener('submit',async e=>{e.preventDefault();await save(db.doc('config/main'),{period:$('#cPeriod').value.trim(),amount:+$('#cAmt').value||0,venueFee:+$('#cVenue').value||0},'設定已更新');$('#feePeriod').value=$('#cPeriod').value.trim();feeDefault()});
+function feeDefault(){const it=$('#feeItem').value;const v=it==='年繳會費'?S.config.amount:it==='場地分攤費'?S.config.venueFee:'';$('#feeAmt').value=v||''}
+$('#feeItem').addEventListener('change',feeDefault);
+$('#fFee').addEventListener('submit',async e=>{e.preventDefault();const mid=$('#feeMem').value;if(!mid)return;
+  if(await save(db.collection('fees').doc(),{memberId:mid,name:memName(mid),item:$('#feeItem').value,period:$('#feePeriod').value.trim(),amount:+$('#feeAmt').value||0,date:$('#feeDate').value,way:'匯款',note:$('#feeNote').value.trim()},'繳費已登錄'))$('#feeNote').value=''});
+$('#fLed').addEventListener('submit',async e=>{e.preventDefault();
+  if(await save(db.collection('ledger').doc(),{date:$('#lDate').value,type:$('#lType').value,cat:$('#lCat').value,amount:+$('#lAmt').value||0,desc:$('#lDesc').value.trim()},'已新增')){$('#lAmt').value='';$('#lDesc').value=''}});
+function resetMem(){editId=null;$('#fMem').reset();setPref('m',{});$('#mBtn').textContent='新增會員';$('#mCancel').hidden=true;$('#mSum').textContent='＋ 代為建檔（不使用平台的親友）'}
+$('#mCancel').addEventListener('click',resetMem);
+$('#fMem').addEventListener('submit',async e=>{e.preventDefault();
+  const old=editId?S.members.find(m=>m.id===editId):{};const d={...old};delete d.id;
+  for(const [k,id] of Object.entries({name:'mName',rel:'mRel',ref:'mRef',phone:'mPhone',email:'mEmail',level:'mLevel',size:'mSize',note:'mNote'}))d[k]=$('#'+id).value.trim();
+  Object.assign(d,getPref('m'));d.role=$('#mRole').value;d.self=false;d.updatedAt=new Date().toISOString();d.joinedAt=old.joinedAt||today;
+  const id=editId||('m_'+Date.now().toString(36));
+  if(await save(db.collection('members').doc(id),d,editId?'已更新':'會員已新增')){resetMem();await syncRoles(S.members.filter(x=>x.id!==id).concat([{...d,id}]))}});
+$('#mSearch').addEventListener('input',renderMembers);
+$('#mCopy').addEventListener('click',async()=>{const h=['姓名','暱稱','身分','介紹人','手機','Email','程度','球衣','緊急聯絡人','緊急電話','加入日','宣誓日','偏好時間','球敘頻率','球隊職位'];
+  const q=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
+  const csv=[h.join(','),...S.members.map(m=>[m.name,m.nick,m.rel,m.ref,m.phone,m.email,m.level,m.size,m.emer,m.emerPhone,m.joinedAt,m.oathAt,prefText(m),m.freq,m.role].map(q).join(','))].join('\n');
+  try{await navigator.clipboard.writeText(csv);toast('已複製，可貼到 Excel / Google 試算表')}catch(_){toast('無法複製')}});
+$('#feeDate').value=today;$('#lDate').value=today;$('#sDate').value=today;
+
+/* auth UI */
+function renderAuth(){
+  $('#authCard').hidden=!!uid||regMode;
+  $('#fProf').hidden=!uid&&!regMode;$('#profNote').hidden=!uid&&!regMode;
+  $('#regBox').hidden=!regMode||!!uid;
+  ['rgEmail','rgPass','rgPass2'].forEach(i=>$('#'+i).required=regMode&&!uid);
+  $('#logoutBtn').hidden=!uid;
+  document.querySelector('a[data-t=profile]').textContent=uid?'會員資料':'登入／註冊';
+  $('#seedBox').hidden=!(admin&&S.introLoadedOnce&&!S.introExists);
+}
+const authErr=e=>({'auth/invalid-credential':'Email 或密碼錯誤','auth/wrong-password':'Email 或密碼錯誤','auth/user-not-found':'查無此帳號，請先註冊','auth/email-already-in-use':'這個 Email 已註冊過，請直接登入（若是 Gmail 請用 Google 登入）','auth/weak-password':'密碼至少 6 碼','auth/invalid-email':'Email 格式不正確','auth/popup-closed-by-user':'已取消登入','auth/too-many-requests':'嘗試太多次，請稍後再試','auth/network-request-failed':'網路連線失敗','auth/unauthorized-domain':'此網址尚未加入 Firebase 授權網域'}[e.code]||('登入失敗：'+(e.code||e.message)));
+if(/Line\//i.test(navigator.userAgent))$('#lineTip').hidden=false;
+$('#gBtn').addEventListener('click',async()=>{if(!window.FB)return toast('尚未連線');try{await FB.google()}catch(e){toast(authErr(e))}});
+$('#fLogin').addEventListener('submit',async e=>{e.preventDefault();try{await FB.login($('#lgEmail').value.trim(),$('#lgPass').value)}catch(err){toast(authErr(err))}});
+$('#forgotBtn').addEventListener('click',async()=>{const em=$('#lgEmail').value.trim();if(!em){toast('請先在上方輸入 Email');return}try{await FB.reset(em);toast('已寄出重設密碼信，請收信')}catch(err){toast(authErr(err))}});
+$('#regBtn').addEventListener('click',()=>{regMode=true;renderAuth();$('#fProf').scrollIntoView({behavior:'smooth'})});
+$('#backLogin').addEventListener('click',()=>{regMode=false;renderAuth()});
+$('#logoutBtn').addEventListener('click',async()=>{await FB.logout();location.hash='intro'});
+$('#fAdmin').addEventListener('submit',async e=>{e.preventDefault();const em=$('#adEmail').value.trim().toLowerCase();if(!em)return;
+  if(await save(db.doc('admins/'+em),{email:em,addedAt:new Date().toISOString()},'已新增管理員'))$('#adEmail').value=''});
+document.addEventListener('click',async e=>{const b=e.target.closest('[data-rmadmin]');if(!b)return;if(!b.dataset.sure){b.dataset.sure='1';b.textContent='確認移除？';return}
+  await del(db.doc('admins/'+b.dataset.rmadmin),'已移除管理員')});
+$('#seedBtn').addEventListener('click',async()=>{$('#seedBtn').disabled=true;
+  if(await save(db.doc('config/intro'),SEED.intro)&&await save(db.doc('config/main'),SEED.main))toast('初始內容已匯入');$('#seedBtn').disabled=false});
+function renderAdmins(){if(!admin)return;const boot=(window.ADMIN_EMAILS||[]).map(x=>x.toLowerCase());
+  $('#adminList').innerHTML=boot.map(e=>`<span>${esc(e)} <span class="mut">（主要）</span></span>`).join('')+S.admins.filter(a=>!boot.includes(a.id)).map(a=>`<span>${esc(a.id)} <button class="del" style="min-height:24px;padding:0 8px" data-rmadmin="${esc(a.id)}">移除</button></span>`).join('')}
+
+/* registration: create account then save profile */
+const _origProf=$('#fProf');
+_origProf.addEventListener('submit',async e=>{if(uid||!regMode)return;e.preventDefault();e.stopImmediatePropagation();
+  if($('#rgPass').value!==$('#rgPass2').value){toast('兩次密碼不一致');return}
+  if(!$('#pConsent').checked){toast('請勾選個資同意');return}
+  try{const c=await FB.register($('#rgEmail').value.trim(),$('#rgPass').value,$('#pName').value.trim());
+    uid=c.user.uid;db=FB.db;regMode=false;
+    if(!$('#pEmail').value)$('#pEmail').value=$('#rgEmail').value.trim();
+    await saveProfile();
+  }catch(err){toast(authErr(err))}
+},true);
+
+/* connect */
+let unsubs=[],timer=null;
+function stopAll(){unsubs.forEach(f=>{try{f()}catch(_){}});unsubs=[]}
+function start(){
+  db=FB.db;
+  const pub=(p,fn)=>unsubs.push(db.doc(p).onSnapshot(fn,()=>{}));
+  FB.onAuth(async u=>{
+    stopAll();pub('config/intro',sn=>{S.introLoadedOnce=true;S.introExists=sn.exists;S.intro=sn.exists?sn.data():{};render()});
+    pub('config/main',sn=>{S.config=sn.exists?sn.data():{};if(admin&&!$('#cPeriod').value){$('#cPeriod').value=S.config.period||'';$('#cAmt').value=S.config.amount||'';$('#cVenue').value=S.config.venueFee||''}render()});
+    pub('config/roles',sn=>{S.roles=sn.exists?(sn.data().list||[]):[];render()});
+    Object.assign(S,{admins:[],members:[],sessions:[],signups:[],fees:[],ledger:[],surveys:[],responses:[]});profLoaded=false;
+    if(!u||(authUser&&authUser.uid!==u.uid)){$('#fProf').reset();setPref('p',{});$('#pMsg').textContent=''}
+    $('#lgPass').value='';authUser=u;uid=u?u.uid:null;admin=false;
+    if(!u){$('#who').textContent='訪客（尚未登入）';status('');render();return}
+    const em=(u.email||'').toLowerCase();
+    const boot=(window.ADMIN_EMAILS||[]).map(x=>x.toLowerCase());
+    if(u.emailVerified||u.providerData.some(p=>p.providerId==='google.com')){
+      if(boot.includes(em))admin=true;
+      else{try{admin=(await db.doc('admins/'+em).get()).exists}catch(_){admin=false}}
+    }
+    $('#who').textContent=(u.displayName||em||'已登入')+(admin?' · 管理員':' · 隊員');
+    if(!$('#pEmail').value&&em)$('#pEmail').value=em;
+    if(!$('#pName').value&&u.displayName)$('#pName').value=u.displayName;
+    clearTimeout(timer);timer=setTimeout(()=>status('資料暫時連不上，畫面可能不是最新。'),10000);
+    const ok=()=>{clearTimeout(timer);status('')};
+    const err=e=>{clearTimeout(timer);console.error(e);if(e.code==='permission-denied')status('部分資料沒有讀取權限；若你是管理員，請確認 Firestore 規則已發布。')};
+    const col=(q,key)=>unsubs.push(q.onSnapshot(sn=>{ok();S[key]=sn.docs.map(d=>({id:d.id,...d.data()}));render()},err));
+    const one=(p,key)=>unsubs.push(db.doc(p).onSnapshot(sn=>{ok();S[key]=sn.exists?[{id:sn.id,...sn.data()}]:[];render()},err));
+    col(db.collection('sessions'),'sessions');col(db.collection('signups'),'signups');col(db.collection('ledger'),'ledger');col(db.collection('surveys'),'surveys');
+    if(admin){col(db.collection('members'),'members');col(db.collection('fees'),'fees');col(db.collection('responses'),'responses');col(db.collection('admins'),'admins')}
+    else{one('members/'+uid,'members');one('responses/'+uid,'responses');col(db.collection('fees').where('memberId','==',uid),'fees')}
+    render();
+  });
+}
+if(window.FB_READY)start();else addEventListener('fb-ready',start);
+addEventListener('fb-missing',()=>{$('#who').textContent='尚未設定';status('尚未填入 Firebase 設定碼（FIREBASE_CONFIG），請依設定說明完成。')});
+addEventListener('fb-fail',()=>{$('#who').textContent='未連線';status('無法載入 Firebase，請檢查網路或設定碼。')});
+if(window.FB_MISSING)dispatchEvent(new Event('fb-missing'));
+render();
+}
+</script>
+</body>
+</html>

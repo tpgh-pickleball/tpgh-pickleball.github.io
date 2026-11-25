@@ -91,6 +91,13 @@ details>summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;alig
 :root[data-theme=dark] .oath .cry{color:#9cc0ff}
 .ag{border-left:6px solid var(--court);padding-left:14px;margin-bottom:16px}.ag:nth-child(3n+2){border-color:#2f9a44}.ag:nth-child(3n){border-color:#e08a00}
 .ag ul{margin:6px 0 0;padding-left:20px}.ag li{margin:3px 0}
+.pend{color:#b26a00;font-weight:700}
+.tag2{display:inline-block;font-size:12px;font-weight:700;padding:2px 8px;border-radius:99px;background:#eef3fb;color:#153f8a;margin-left:6px;vertical-align:middle}.tag2.open{background:#fff1d6;color:#8a5200}
+.smedia{width:100%;max-height:260px;object-fit:cover;border-radius:12px;margin:10px 0 4px;cursor:zoom-in;display:block;background:var(--line)}
+.sdesc{margin:8px 0 0;font-size:15px;white-space:normal}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:20;display:flex;align-items:flex-start;justify-content:center;overflow:auto;padding:24px 12px}
+.modal .card{width:min(100%,720px);margin:0}
+#lightbox{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:30;display:flex;align-items:center;justify-content:center;padding:12px;cursor:zoom-out}#lightbox img{max-width:100%;max-height:100%;border-radius:8px}
 #toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:99px;font-size:15px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:9}
 #toast.on{opacity:1}
 @media(prefers-reduced-motion:reduce){#toast{transition:none}}
@@ -143,12 +150,17 @@ table{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding-bl
 
 <section id="sessions">
 <h2>場次登記</h2>
+<div class="note">已繳場地分攤費的<b>固定隊員每場預設出席</b>，不能出席請按「請假」。請假釋出的名額開放給非隊員或想體驗的朋友「零打報名」。</div>
 <details class="card admin" data-admin hidden><summary>＋ 新增場次（管理員）</summary>
 <form id="fSess" class="f" style="margin-top:10px">
-<label>日期<input type="date" id="sDate" required></label><label>開始<input type="time" id="sStart" value="19:00" required></label>
-<label>結束<input type="time" id="sEnd" value="21:00" required></label><label>場地<input id="sVenue" placeholder="例：大安運動中心 3F" required></label>
-<label>名額<input type="number" id="sCap" value="12" min="1" required></label><label>每人費用（元）<input type="number" id="sFee" value="200" min="0"></label>
-<label>每週重複（週數）<input type="number" id="sWeeks" value="1" min="1" max="26"></label><label>備註<input id="sNote" placeholder="例：新手教學"></label>
+<label>場次類型<select id="sKind"><option value="regular">固定團練（固定隊員預設出席＋零打）</option><option value="open">特別場次（所有人報名繳費）</option></select></label>
+<label>日期<input type="date" id="sDate" required></label><label>開始<input type="time" id="sStart" value="14:00" required></label>
+<label>結束<input type="time" id="sEnd" value="17:00" required></label><label>場地<input id="sVenue" placeholder="例：崇光禮堂" required></label>
+<label>名額<input type="number" id="sCap" value="16" min="1" required></label><label><span id="sFeeLbl">零打費（元／人）</span><input type="number" id="sFee" value="200" min="0"></label>
+<label>每週重複（週數）<input type="number" id="sWeeks" value="1" min="1" max="26"></label><label>備註（一行）<input id="sNote" placeholder="例：新手教學"></label>
+<label style="grid-column:1/-1">活動說明<textarea id="sDesc" placeholder="活動內容、集合方式、注意事項…"></textarea></label>
+<label>活動連結（EDM、PDF、報名表）<input id="sLink" type="url" placeholder="https://drive.google.com/..."></label>
+<label>活動照片／EDM 圖片<input type="file" id="sImg" accept="image/*"></label>
 <div class="row"><button>建立場次</button></div></form></details>
 <div id="sessList"></div>
 <details class="card"><summary>過去場次</summary><div id="sessPast"></div></details>
@@ -185,6 +197,9 @@ table{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding-bl
 <fieldset class="fs"><legend>球敘頻率偏好（單選）</legend><div class="opts"><label class="opt"><input type="radio" name="pF" value="每週多次"><span>每週多次</span></label><label class="opt"><input type="radio" name="pF" value="每週一次"><span>每週一次</span></label><label class="opt"><input type="radio" name="pF" value="兩週一次"><span>兩週一次</span></label></div></fieldset>
 <label>是否有球拍<select id="pPaddle"><option>有</option><option>沒有，需借用</option><option>想團購</option></select></label>
 <label>球衣尺寸<select id="pSize"><option></option><option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option><option>2XL</option><option>3XL</option></select></label>
+<label>出生年月日 *<input type="date" id="pBirth" required></label>
+<label>身分證字號 *<input id="pNid" required maxlength="20" autocapitalize="characters" autocomplete="off" placeholder="例：A123456789（外籍可填居留證／護照號碼）" style="text-transform:uppercase"></label>
+<p class="mut" style="grid-column:1/-1;margin:-4px 0 0">個資保護：出生年月日與身分證字號僅供活動保險備用，只有本人與管理員看得到。</p>
 <label>緊急聯絡人<input id="pEmer"></label><label>緊急聯絡電話<input id="pEmerPhone" type="tel"></label>
 <label style="grid-column:1/-1">備註（健康注意事項等）<textarea id="pNote"></textarea></label>
 <label class="opt" style="grid-column:1/-1"><input type="checkbox" id="pOath"><span>我已閱讀「<a href="#intro">隊員入隊宣示誓詞</a>」，願意遵守並完成線上宣誓</span></label>
@@ -213,7 +228,8 @@ table{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding-bl
 <hr style="border:0;border-top:1px solid var(--line);margin:16px 0">
 <form id="fFee" class="f">
 <label>會員<select id="feeMem" required></select></label>
-<label>項目<select id="feeItem"><option>年繳會費</option><option>場地分攤費</option><option>臨打費</option><option>球衣／裝備</option><option>其他</option></select></label>
+<label>項目<select id="feeItem"><option>年繳會費</option><option>場地分攤費</option><option>零打費</option><option>場次費</option><option>球衣／裝備</option><option>其他</option></select></label>
+<label id="feeSessWrap" hidden>場次<select id="feeSess"></select></label>
 <label>期別<input id="feePeriod" required></label><label>金額（元）<input type="number" id="feeAmt" required min="0"></label>
 <label>繳費日<input type="date" id="feeDate" required></label>
 <label>方式<input value="匯款" disabled></label>
@@ -221,8 +237,21 @@ table{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding-bl
 <div class="row" style="align-self:end"><button>登錄繳費</button></div></form>
 </div>
 <div class="kpis" id="feeKpi"></div>
+<div class="card" id="payReportCard" hidden><h3>回報匯款</h3>
+<p class="mut" style="margin-top:0">匯款後在這裡回報。球隊經理對帳確認後，才會列入繳費紀錄與球隊財務。</p>
+<form id="fPay" class="f">
+<label>項目<select id="pyItem"><option>年繳會費</option><option>場地分攤費</option><option value="場次費">場次費用（零打／特別場次）</option><option>其他</option></select></label>
+<label id="pySessWrap" hidden>場次<select id="pySess"></select></label>
+<label>金額（元）<input type="number" id="pyAmt" min="1" required></label>
+<label>匯款日<input type="date" id="pyDate" required></label>
+<label>帳號末五碼 *<input id="pyLast5" inputmode="numeric" pattern="[0-9]{5}" maxlength="5" placeholder="5 位數字" required></label>
+<label>備註<input id="pyNote" placeholder="例：幫眷屬一起繳"></label>
+<div class="row" style="align-self:end"><button>送出回報</button></div></form>
+<div id="myPays" style="margin-top:12px"></div></div>
+<div class="card admin" id="pendCard" hidden><h3>待確認匯款 <span id="pendN" class="pend"></span></h3>
+<p class="mut" style="margin-top:0">請核對銀行入帳（金額、末五碼）後按「確認入帳」，才會列入繳費紀錄與財務報表。</p><div id="pendList"></div></div>
 <div class="card" id="feeStatusCard"><h3 id="feeStatusTitle">本期繳費狀況</h3><div id="feeStatus"></div></div>
-<div class="card"><h3>繳費紀錄</h3><div id="feeList"></div></div>
+<div class="card"><h3>繳費紀錄（已對帳入帳）</h3><div id="feeList"></div></div>
 </section>
 
 <section id="finance">
@@ -235,7 +264,7 @@ table{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding-bl
 <label>類別<select id="lCat"><option>場地租借</option><option>球具</option><option>球衣</option><option>保險</option><option>餐敘</option><option>贊助</option><option>其他</option></select></label>
 <label>金額（元）<input type="number" id="lAmt" required min="0"></label><label>說明<input id="lDesc" required></label>
 <div class="row" style="align-self:end"><button>新增</button></div></form></details>
-<div class="card"><h3>支出類別</h3><div id="finCat"></div></div>
+<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr))"><div class="card"><h3>收入類別</h3><div id="finInc"></div></div><div class="card"><h3>支出類別</h3><div id="finCat"></div></div></div>
 <div class="card"><h3>收支明細</h3><div id="finList"></div></div>
 </section>
 
@@ -260,7 +289,7 @@ table{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding-bl
 <form id="fMem" class="f" style="margin-top:10px">
 <label>姓名 *<input id="mName" required></label>
 <label>身分<select id="mRel"><option>社友</option><option>社友眷屬</option><option>朋友</option></select></label>
-<label>介紹社友<input id="mRef"></label><label>手機<input id="mPhone" type="tel"></label><label>Email<input id="mEmail" type="email"></label>
+<label>介紹社友<input id="mRef"></label><label>手機<input id="mPhone" type="tel"></label><label>Email<input id="mEmail" type="email"></label><label>出生年月日<input type="date" id="mBirth"></label><label>身分證字號<input id="mNid" maxlength="20" autocomplete="off" style="text-transform:uppercase"></label>
 <label>球隊職位<select id="mRole" class="roleSel"></select></label>
 <label>程度<select id="mLevel"><option>從未打過</option><option>新手</option><option>初級</option><option>中級</option><option>進階</option></select></label>
 <label>球衣尺寸<input id="mSize"></label>
@@ -268,9 +297,22 @@ table{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding-bl
 <fieldset class="fs"><legend>球敘頻率偏好（單選）</legend><div class="opts"><label class="opt"><input type="radio" name="mF" value="每週多次"><span>每週多次</span></label><label class="opt"><input type="radio" name="mF" value="每週一次"><span>每週一次</span></label><label class="opt"><input type="radio" name="mF" value="兩週一次"><span>兩週一次</span></label></div></fieldset>
 <label>備註<input id="mNote"></label>
 <div class="row" style="align-self:end"><button id="mBtn">新增會員</button><button type="button" class="ghost" id="mCancel" hidden>取消編輯</button></div></form></details>
-<div class="card"><div class="row" style="margin-bottom:10px"><input id="mSearch" placeholder="搜尋姓名、電話、身分" style="flex:1"><button class="ghost" id="mCopy">複製 CSV</button></div><div id="memList"></div></div>
+<div class="card"><div class="row" style="margin-bottom:10px"><input id="mSearch" placeholder="搜尋姓名、電話、身分" style="flex:1"><button class="ghost" id="mCopy">複製 CSV（含個資）</button></div><div id="memList"></div></div>
 </section>
 </main>
+<div class="modal" id="sessModal" hidden><div class="card"><h3>編輯場次</h3>
+<form id="fSessEdit" class="f">
+<label>場次類型<select id="eKind"><option value="regular">固定團練</option><option value="open">特別場次</option></select></label>
+<label>日期<input type="date" id="eDate" required></label><label>開始<input type="time" id="eStart" required></label><label>結束<input type="time" id="eEnd" required></label>
+<label>場地<input id="eVenue" required></label><label>名額<input type="number" id="eCap" min="1" required></label>
+<label><span id="eFeeLbl">費用（元／人）</span><input type="number" id="eFee" min="0"></label><label>備註（一行）<input id="eNote"></label>
+<label style="grid-column:1/-1">活動說明<textarea id="eDesc"></textarea></label>
+<label>活動連結<input id="eLink" type="url" placeholder="https://"></label>
+<label>更換照片／EDM 圖片<input type="file" id="eImg" accept="image/*"></label>
+<label class="opt" id="eImgDelWrap"><input type="checkbox" id="eImgDel"><span>移除目前圖片</span></label>
+<div class="row" style="grid-column:1/-1"><button>儲存場次</button><button type="button" class="ghost" id="eClose">取消</button></div>
+</form></div></div>
+<div id="lightbox" hidden><img alt="活動圖片"></div>
 <div id="toast" role="status"></div>
 <script>
 /* ===== 設定區：只需要改這裡 ===== */
@@ -327,7 +369,7 @@ const today=ymd(new Date());
 const WK='日一二三四五六';
 let db=null,user=null,uid=null,authUser=null,admin=false,readonly=false,profLoaded=false,editId=null,regMode=false;
 const SEED={"intro": {"about": "台北創新匹克球隊由台北創新網路扶輪社（The Rotary e Club of Taipei Gathering Heart）社友與寶眷組成，第一階段開放報名。邀請1-2位匹克球教練，有系統打造基礎功，歡迎社友加入運動行列。", "bank": {"acct": "0933253650", "bank": "王道銀行", "branch": "營業部 0011", "code": "048", "holder": "張庭", "note": "匯款後請於匹克群告知姓名與帳號末五碼。"}, "facts": [{"k": "球敘開跑日", "v": "預計 12 月開始"}, {"k": "球敘時間", "v": "每週六或每週日 下午 2:00～5:00"}, {"k": "球敘地點", "v": "崇光禮堂"}, {"k": "報名人數", "v": "上限 16 人"}, {"k": "報名資格", "v": "本社社員及寶眷"}, {"k": "報名費用", "v": "年繳會費 $1,000＋場地分攤費 $2,000（匯款）"}], "fees": [{"amt": "$1,000", "item": "年繳會費", "note": "固定年繳"}, {"amt": "$2,000", "item": "場地分攤費", "note": "場地租金依人數分攤半年繳"}, {"amt": "$200", "item": "場地報名費（臨打）", "note": "非固定隊員單次參加"}, {"amt": "匯款", "item": "繳費方式", "note": "目前僅接受匯款，帳號見右方"}], "oath": "宣誓人在此莊嚴宣誓：\n\n我自願加入台北創新匹克球隊，\n認同球隊宗旨與核心價值。\n\n我願以健康為本、品格為先、團隊為榮，\n遵守球隊規範，尊重每一位隊友，\n積極學習、持續精進球技。\n\n我承諾，將球敘時間優先排入個人工作與生活行程，\n珍惜每一次團練與交流，\n不輕易缺席、不輕易脫隊，\n與隊友共同成長。\n\n我願以匹克球結交朋友，以運動促進健康，\n以公益回饋社會，\n實踐扶輪「服務超我」的精神，\n讓每一次揮拍，都成為影響他人的力量。\n\n我願與所有隊友攜手前行，\n共同打造一支充滿紀律、熱情、健康、\n公益與影響力的球隊。\n\n揮出創新，公益得分！\n健康同行，服務同行！", "org": [{"lv": 1, "name": "", "note": "", "role": "台北創新網路扶輪社"}, {"lv": 2, "name": "PP sJoe", "note": "", "role": "榮董"}, {"lv": 2, "name": "PP Alison", "note": "", "role": "隊長"}, {"lv": 2, "name": "PE SamLu", "note": "", "role": "副隊長"}, {"lv": 3, "name": "專業匹克球教練（1-2位）", "note": "", "role": "教練"}, {"lv": 3, "name": "Yvonne", "note": "會費收支、對帳", "role": "球隊經理"}, {"lv": 4, "name": "參與球隊活動", "note": "", "role": "一般會員"}], "tag": "揮出創新，公益得分！ 健康同行，服務同行！"}, "main": {"amount": 1000, "period": "2026/11–2027/10", "venueFee": 2000}};
-const S={admins:[],roles:[],members:[],sessions:[],signups:[],fees:[],ledger:[],surveys:[],responses:[],config:{}};
+const S={media:{},paidSessions:[],roster:{},payments:[],admins:[],roles:[],members:[],sessions:[],signups:[],fees:[],ledger:[],surveys:[],responses:[],config:{}};
 function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('on'),2200)}
 function status(t){const e=$('#status');e.hidden=!t;e.textContent=t||''}
 async function save(ref,data,ok){
@@ -339,7 +381,7 @@ async function del(ref,ok){if(!db)return;try{await ref.delete();if(ok)toast(ok)}
 
 /* routing */
 const TABS=['intro','profile','sessions','fees','survey','finance','stats','members'];
-function route(){let h=location.hash.slice(1);if(!TABS.includes(h)||(h==='members'&&!admin)||(!uid&&h!=='profile')||(h==='survey'&&$('#navSurvey').hidden))h='intro';
+function route(){let h=location.hash.slice(1);if(!TABS.includes(h)||((h==='members'||h==='finance')&&!admin)||(!uid&&h!=='profile')||(h==='survey'&&$('#navSurvey').hidden))h='intro';
   document.querySelectorAll('section').forEach(s=>s.classList.toggle('on',s.id===h));
   document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('on',a.dataset.t===h))}
 addEventListener('hashchange',route);route();
@@ -347,14 +389,21 @@ addEventListener('hashchange',route);route();
 /* helpers */
 const memName=id=>{const m=S.members.find(x=>x.id===id);return m?m.name:(S.signups.find(x=>x.id===id)?.name||'')};
 const myMember=()=>S.members.find(m=>m.id===uid);
-function count(sid){let n=0,names=[];for(const s of S.signups){const it=s.items&&s.items[sid];if(it){n+=(+it.n||1);names.push({id:s.id,name:s.name||'會員',n:+it.n||1})}}return{n,names}}
+const isReg=id=>(S.roster.list||[]).some(r=>r.id===id);
+function payOf(id,sid,fee,v){if(!(fee>0))return 'free';const pd=S.paidSessions.find(x=>x.id===id);if(pd&&pd[sid])return 'paid';return v&&v.reported?'pending':'unpaid'}
+function count(sid){const ses=S.sessions.find(x=>x.id===sid)||{},cap=+ses.cap||0,kind=ses.kind||'regular',fee=+ses.fee||0;const it=id=>S.signups.find(x=>x.id===id)?.items?.[sid];
+  const reg=[],leave=[],drop=[];
+  if(kind==='regular')for(const r of (S.roster.list||[])){const v=it(r.id);if(v&&v.leave)leave.push({id:r.id,name:r.name,reason:v.reason||''});else reg.push({id:r.id,name:r.name,n:1,pay:'free'})}
+  for(const sg of S.signups){const v=sg.items&&sg.items[sid];if(v&&!v.leave&&(kind==='open'||!isReg(sg.id)))drop.push({id:sg.id,name:sg.name||'會員',n:+v.n||1,pay:payOf(sg.id,sid,fee,v)})}
+  const sum=a=>a.reduce((t,x)=>t+x.n,0);const ok=drop.filter(x=>x.pay==='paid'||x.pay==='free');
+  const n=reg.length+sum(drop);return {n,done:reg.length+sum(ok),cap,kind,fee,free:cap?Math.max(0,cap-n):99,reg,leave,drop,names:reg.concat(ok)}}
 function bars(rows,fmt=v=>v){const max=Math.max(1,...rows.map(r=>r[1]));return rows.length?rows.map(([k,v])=>`<div class="bar"><span>${esc(k)}</span><div><i style="width:${v/max*100}%"></i></div><span class="num">${esc(fmt(v))}</span></div>`).join(''):'<p class="mut">尚無資料</p>'}
 const dateBox=d=>{const x=new Date(d+'T00:00');return `<div class="date"><span>${x.getMonth()+1} 月</span><b class="num">${x.getDate()}</b><span>週${WK[x.getDay()]}</span></div>`};
 
 /* render */
 function render(){
   document.querySelectorAll('[data-admin]').forEach(e=>e.hidden=!admin);
-  document.querySelectorAll('nav a').forEach(a=>{if(!['intro','profile','members','survey'].includes(a.dataset.t))a.hidden=!uid});
+  document.querySelectorAll('nav a').forEach(a=>{if(!['intro','profile','members','survey'].includes(a.dataset.t))a.hidden=!uid||(a.dataset.t==='finance'&&!admin)});
   $('#navMembers').hidden=!admin;$('#navSurvey').hidden=!uid||(!admin&&!S.surveys.some(x=>x.open));route();renderAuth();
   renderIntro();renderSessions();renderSurveys();renderFees();renderFinance();renderStats();if(admin)renderMembers();
   const opts=S.members.slice().sort((a,b)=>(a.name||'').localeCompare(b.name||'','zh-Hant')).map(m=>`<option value="${esc(m.id)}">${esc(m.name)}（${esc(m.rel||'')}）</option>`).join('');
@@ -363,25 +412,50 @@ function render(){
   if(!$('#feeAmt').value)feeDefault();
   if(!profLoaded&&myMember()){fillProfile(myMember());profLoaded=true}
 }
+function sLabel(s){return s?`${s.date} ${s.start} ${s.venue}`:''}
+const PAYT={paid:['paid','✓'],free:['paid','✓'],pending:['pend','待確認'],unpaid:['unpaid','待繳費']};
+function mediaSrc(mid){if(!mid)return '';const v=S.media[mid];
+  if(v===undefined){S.media[mid]=null;db.doc('media/'+mid).get().then(sn=>{const u=sn.exists?String(sn.data().img||''):'';S.media[mid]=u.startsWith('data:image/')?u:'';render()}).catch(()=>{S.media[mid]=''})}
+  return v||''}
 function sessCard(s,past){
-  const {n,names}=count(s.id),cap=+s.cap||0,full=cap&&n>=cap;
-  const mine=S.signups.find(x=>x.id===uid)?.items?.[s.id];
+  const c=count(s.id),{n,cap,free,reg,leave,drop,kind,fee}=c,full=cap&&n>=cap,sid=esc(s.id),open=kind==='open';
+  const mine=S.signups.find(x=>x.id===uid)?.items?.[s.id];const amReg=!open&&isReg(uid);
   const pct=cap?Math.min(100,n/cap*100):0;
+  const feeTxt=open?(fee>0?`每人 ${money(fee)}`:'免費'):`零打 ${money(fee)}／人`;
   let act='';
   if(!past&&uid&&!readonly){
-    act=mine?`<button class="ghost" data-cancel="${esc(s.id)}">取消報名</button><span class="mut">已報名 ${esc(mine.n)} 人</span>`
-      :`<select id="g_${esc(s.id)}" aria-label="人數"><option value="1">本人</option><option value="2">本人 +1</option><option value="3">本人 +2</option></select><button class="ball" data-join="${esc(s.id)}" ${full?'disabled':''}>${full?'已額滿':'我要報名'}</button>`;
+    if(amReg){act=mine&&mine.leave?`<b class="pend">已請假</b><button class="ghost" data-unleave="${sid}">取消請假</button>`
+      :`<span class="paid" style="font-weight:700">✓ 出席</span><button class="ghost" data-leave="${sid}">我要請假</button>`}
+    else if(mine&&!mine.leave){const st=payOf(uid,s.id,fee,mine),amt=fee*(+mine.n||1);
+      act=(st==='paid'||st==='free'?`<b class="paid">✓ 已完成報名${+mine.n>1?'（'+esc(mine.n)+' 人）':''}</b>`
+        :st==='pending'?`<b class="pend">已回報匯款，待確認</b>`
+        :`<b class="unpaid">待繳費 ${money(amt)}</b><button class="ball" data-gopay="${sid}">前往繳費</button>`)+`<button class="ghost" data-cancel="${sid}">取消報名</button>`}
+    else act=free>0?`<select id="g_${sid}" aria-label="人數"><option value="1">本人</option><option value="2">本人 +1</option><option value="3">本人 +2</option></select><button class="ball" data-join="${sid}">${open?'我要報名':'零打報名'}</button>`
+      :`<span class="mut">${open?'名額已滿':'零打名額已滿'}</span>`;
   }
+  const chip=(x,kind)=>{const pm=kind==='drop'&&fee>0?PAYT[x.pay]:null;return `<span class="${kind==='leave'?'mut':''}">${esc(x.name)}${x.n>1?' +'+(x.n-1):''}${kind==='leave'&&x.reason?'（'+esc(x.reason)+'）':''}${pm?` <b class="${pm[0]}">${pm[1]}</b>`:''}${admin&&kind!=='reg'?` <button class="del" style="min-height:24px;padding:0 6px;border:0" aria-label="移除" data-kick="${sid}|${esc(x.id)}">×</button>`:''}</span>`};
   let adm='';
-  if(admin){adm=`<details style="margin-top:8px" data-keep="${esc(s.id)}"><summary>管理：代為登記多人</summary>${(()=>{const yet=S.members.filter(m=>!S.signups.find(x=>x.id===m.id)?.items?.[s.id]).sort((a,b)=>(a.name||'').localeCompare(b.name||'','zh-Hant'));
-    return yet.length?`<div class="row" style="margin:4px 0 8px"><button type="button" class="ghost" style="min-height:36px;padding:4px 12px" data-pxall="${esc(s.id)}">全選</button><span class="mut">剩餘名額 ${cap?Math.max(0,cap-n):'不限'}</span></div><div class="opts" id="px_${esc(s.id)}">${yet.map(m=>`<label class="opt"><input type="checkbox" value="${esc(m.id)}"><span>${esc(m.name)}</span></label>`).join('')}</div>`:'<p class="mut">所有會員都已登記</p>'})()}
-    <div class="row" style="margin-top:10px"><button class="ghost" data-proxy="${esc(s.id)}">登記勾選的會員</button><button class="del" data-dsess="${esc(s.id)}">刪除場次</button></div></details>`}
+  if(admin){const regIds=new Set(open?[]:(S.roster.list||[]).map(r=>r.id));
+    const byName=(a,b)=>(a.name||'').localeCompare(b.name||'','zh-Hant');
+    const canLeave=reg.slice().sort(byName);
+    const canDrop=S.members.filter(m=>!regIds.has(m.id)&&!S.signups.find(x=>x.id===m.id)?.items?.[s.id]).sort(byName);
+    const list=(id,arr)=>arr.length?`<div class="opts" id="${id}">${arr.map(m=>`<label class="opt"><input type="checkbox" value="${esc(m.id)}"><span>${esc(m.name)}</span></label>`).join('')}</div>`:'<p class="mut">無</p>';
+    adm=`<details style="margin-top:8px" data-keep="${sid}"><summary>管理：${open?'代為報名':'代請假／代登記零打'}・編輯</summary>
+    ${!open&&!past?`<p class="mut" style="margin:4px 0">代為請假（固定隊員）</p>${list('lv_'+s.id,canLeave)}<div class="row" style="margin:8px 0 12px"><button class="ghost" data-pxleave="${sid}">登記勾選者請假</button></div>`:''}
+    ${!past?`<p class="mut" style="margin:4px 0">${open?'代為報名':'代為登記零打（非固定隊員）'}，剩 ${free} 個名額${fee>0?'；繳費請到「會費繳費」登錄':''}</p>${list('px_'+s.id,canDrop)}`:''}
+    <div class="row" style="margin-top:8px">${!past?`<button class="ghost" data-proxy="${sid}">${open?'報名勾選者':'登記勾選者零打'}</button>`:''}<button class="ghost" data-esess="${sid}">編輯場次</button><button class="del" data-dsess="${sid}">刪除場次</button></div></details>`}
+  const img=mediaSrc(s.mediaId);const link=/^https:\/\//.test(s.link||'')?s.link:'';
   return `<div class="card sess">${dateBox(s.date)}<div>
-  <div class="row" style="justify-content:space-between"><h3 style="margin:0"><span class="num" style="font-size:24px">${esc(s.start)}–${esc(s.end)}</span> · ${esc(s.venue)}</h3><span class="mut">每人 ${money(s.fee)}</span></div>
+  <div class="row" style="justify-content:space-between"><h3 style="margin:0"><span class="num" style="font-size:24px">${esc(s.start)}–${esc(s.end)}</span> · ${esc(s.venue)}<span class="tag2 ${open?'open':''}">${open?'特別場次':'固定團練'}</span></h3><span class="mut">${feeTxt}</span></div>
   ${s.note?`<div class="mut">${esc(s.note)}</div>`:''}
+  ${img?`<img class="smedia" src="${esc(img)}" alt="活動圖片" data-zoom="1">`:''}
+  ${s.desc?`<p class="sdesc">${esc(s.desc).replace(/\n/g,'<br>')}</p>`:''}
+  ${link?`<p style="margin:6px 0 0"><a href="${esc(link)}" target="_blank" rel="noopener">查看活動 EDM／詳細資訊 ↗</a></p>`:''}
   <div class="meter"><i class="${full?'full':''}" style="width:${pct}%"></i></div>
-  <div class="row" style="justify-content:space-between"><span><b class="num" style="font-size:22px">${n}</b> / ${cap} 人</span><div class="row">${act}</div></div>
-  <div class="chips">${names.map(x=>`<span>${esc(x.name)}${x.n>1?' +'+(x.n-1):''}${admin?` <button class="del" style="min-height:24px;padding:0 6px;border:0" aria-label="移除" data-kick="${esc(s.id)}|${esc(x.id)}">×</button>`:''}</span>`).join('')}</div>${adm}</div></div>`;
+  <div class="row" style="justify-content:space-between"><span><b class="num" style="font-size:22px">${n}</b> / ${cap} 人${open?'報名':'出席'}　<span class="mut" style="white-space:nowrap">${open?`完成繳費 ${c.done}`:`請假 ${leave.length}・零打 ${drop.reduce((a,x)=>a+x.n,0)}`}</span>　<b class="${free>0?'paid':'unpaid'}" style="white-space:nowrap">${open?'名額剩':'零打名額剩'} ${free}</b></span><div class="row">${act}</div></div>
+  ${reg.length?`<p class="mut" style="margin:8px 0 0">固定隊員</p><div class="chips" style="margin-top:4px">${reg.map(x=>chip(x,'reg')).join('')}</div>`:''}
+  ${leave.length?`<p class="mut" style="margin:8px 0 0">請假</p><div class="chips" style="margin-top:4px">${leave.map(x=>chip(x,'leave')).join('')}</div>`:''}
+  ${drop.length?`<p class="mut" style="margin:8px 0 0">${open?'報名名單':'零打'}</p><div class="chips" style="margin-top:4px">${drop.map(x=>chip(x,'drop')).join('')}</div>`:''}${adm}</div></div>`;
 }
 const lines=t=>String(t||'').split('\n').map(l=>l.trim()).filter(Boolean).map(l=>l.split(/[｜|]/).map(x=>x.trim()));
 function parseAgenda(t){const out=[];for(const l of String(t).split('\n').map(x=>x.trim()).filter(Boolean)){
@@ -405,7 +479,7 @@ function renderIntro(){
   $('#iOath').innerHTML=op.length?`<h3>隊員入隊宣示誓詞</h3>${op.map((x,i)=>`<p class="${i===op.length-1?'cry':''}">${esc(x).replace(/\n/g,'<br>')}</p>`).join('')}<p class="mut" style="margin-top:14px">隊員可在「<a href="#profile">會員資料</a>」勾選完成線上宣誓。</p>`:'';
   const B=I.bank||{};
   $('#iBank').innerHTML=`<h3>匯款資訊</h3>${B.acct?`<div class="acct num">${esc(B.acct)}</div><dl><div><dt>銀行</dt><dd>${esc(B.bank)}${B.code?'（'+esc(B.code)+'）':''} ${esc(B.branch)}</dd></div><div><dt>戶名</dt><dd>${esc(B.holder)}</dd></div></dl><button type="button" id="copyAcct">複製帳號</button>`:'<p>匯款帳號將由管理員公布，請稍候或洽隊長。</p>'}${B.note?`<p style="margin:12px 0 0;font-size:14px">${esc(B.note)}</p>`:''}`;
-  const ca=$('#copyAcct');if(ca)ca.onclick=async()=>{try{await navigator.clipboard.writeText(String(B.code?B.code+' ':'')+B.acct);toast('已複製帳號')}catch(_){toast('無法複製，請手動抄寫')}};
+  const ca=$('#copyAcct');if(ca)ca.onclick=async()=>{try{await navigator.clipboard.writeText(String(B.acct).replace(/[^0-9]/g,''));toast('已複製帳號')}catch(_){toast('無法複製，請手動抄寫')}};
   if(admin&&!S.introLoaded&&S.intro){S.introLoaded=true;
     $('#eTag').value=I.tag||'';$('#eAbout').value=I.about||'';
     $('#eFacts').value=(I.facts||[]).map(f=>f.k+'｜'+f.v).join('\n');
@@ -459,35 +533,85 @@ function renderSurveys(){
     return `<div class="card"><h3>${esc(sv.title)}</h3>${sv.desc?`<p class="mut">${esc(sv.desc)}</p>`:''}${body}${res}</div>`}).join(''):'<div class="card mut">目前沒有問卷。</div>';
 }
 const isA=i=>i==='年繳會費'||i==='年費',isV=i=>i==='場地分攤費'||i==='場地費';
-function feeSt(id){const fs=S.fees.filter(f=>f.memberId===id&&f.period===(S.config.period||''));return {a:fs.some(f=>isA(f.item)),v:fs.some(f=>isV(f.item))}}
-const mark=(ok,t)=>`<b class="${ok?'paid':'unpaid'}">${t}${ok?'✓':'○'}</b>`;
-function renderFees(){
+function feeSt(id){const per=S.config.period||'';const fs=S.fees.filter(f=>f.memberId===id&&f.period===per);const ps=S.payments.filter(x=>x.memberId===id&&x.period===per&&x.status==='pending');
+  return {a:fs.some(f=>isA(f.item)),v:fs.some(f=>isV(f.item)),pa:ps.some(x=>isA(x.item)),pv:ps.some(x=>isV(x.item))}}
+const mark=(ok,t,pend)=>ok?`<b class="paid">${t}✓</b>`:pend?`<b class="pend">${t}待確認</b>`:`<b class="unpaid">${t}○</b>`;
+const PST={pending:['pend','待確認'],confirmed:['paid','已入帳'],rejected:['unpaid','退回']};
+function renderPays(){
+  $('#payReportCard').hidden=!uid;
+  if(!$('#pySessWrap').hidden)fillPySess();if(!$('#pyAmt').value)pyDefault();
+  const mine=S.payments.filter(x=>x.memberId===uid).sort((a,b)=>(b.at||'').localeCompare(a.at||''));
+  $('#myPays').innerHTML=mine.length?`<p class="mut" style="margin:0 0 4px">我的匯款回報</p><table class="stack"><thead><tr><th>匯款日</th><th>項目</th><th class="r">金額</th><th>末五碼</th><th>狀態</th><th></th></tr></thead><tbody>${mine.map(x=>{const [c,t]=PST[x.status]||PST.pending;
+    return `<tr><td>${esc(x.date)}</td><td>${esc(x.item)}</td><td class="r num">${money(x.amount)}</td><td>${esc(x.last5)}</td><td><b class="${c}">${t}</b>${x.status==='rejected'&&x.reason?`<div class="mut">${esc(x.reason)}</div>`:''}</td><td>${x.status==='pending'?`<button class="del" data-wpay="${esc(x.id)}">撤回</button>`:''}</td></tr>`}).join('')}</tbody></table>`:'';
+  $('#pendCard').hidden=!admin;if(!admin)return;
+  const pend=S.payments.filter(x=>x.status==='pending').sort((a,b)=>(a.at||'').localeCompare(b.at||''));
+  $('#pendN').textContent=pend.length?`（${pend.length} 筆）`:'';
+  $('#pendList').innerHTML=pend.length?`<table class="stack"><thead><tr><th>會員</th><th>項目／期別</th><th class="r">金額</th><th>匯款日</th><th>末五碼</th><th>備註</th><th></th></tr></thead><tbody>${pend.map(x=>`<tr><td><b>${esc(x.name)}</b></td><td>${esc(x.item)}<div class="mut">${esc(x.sessionLabel||x.period)}</div></td><td class="r num">${money(x.amount)}</td><td>${esc(x.date)}</td><td class="num" style="font-size:18px">${esc(x.last5)}</td><td>${esc(x.note)}</td><td><div class="row"><button class="ball" style="min-height:38px;padding:4px 12px" data-okpay="${esc(x.id)}">確認入帳</button><button class="del" data-nopay="${esc(x.id)}">退回</button></div></td></tr>`).join('')}</tbody></table>`:'<p class="mut">目前沒有待確認的匯款。</p>';
+}
+function myUnpaid(){return S.sessions.filter(x=>{const v=S.signups.find(y=>y.id===uid)?.items?.[x.id];return v&&!v.leave&&payOf(uid,x.id,+x.fee||0,v)==='unpaid'}).sort((a,b)=>a.date.localeCompare(b.date))}
+function fillPySess(sel){const l=myUnpaid();const cur=sel||$('#pySess').value;$('#pySess').innerHTML=l.length?l.map(x=>`<option value="${esc(x.id)}">${esc(sLabel(x))}（${x.kind==='open'?'特別場次':'零打'}）</option>`).join(''):'<option value="">目前沒有待繳費的場次</option>';if(cur&&l.some(x=>x.id===cur))$('#pySess').value=cur}
+function pyDefault(sel){const it=$('#pyItem').value;$('#pySessWrap').hidden=it!=='場次費';
+  if(it==='場次費'){fillPySess(typeof sel==='string'?sel:null);const x=S.sessions.find(y=>y.id===$('#pySess').value);const v=x&&S.signups.find(y=>y.id===uid)?.items?.[x.id];$('#pyAmt').value=x?(+x.fee||0)*(+(v&&v.n)||1):'';return}
+  const v=it==='年繳會費'?S.config.amount:it==='場地分攤費'?S.config.venueFee:'';$('#pyAmt').value=v||''}
+$('#pyItem').addEventListener('change',()=>pyDefault());$('#pySess').addEventListener('change',()=>pyDefault($('#pySess').value));
+$('#fPay').addEventListener('submit',async e=>{e.preventDefault();if(!uid)return;const m=myMember();
+  if(!m){toast('請先填寫會員資料');location.hash='profile';return}
+  let item=$('#pyItem').value,sid='',ses=null;
+  if(item==='場次費'){sid=$('#pySess').value;ses=S.sessions.find(x=>x.id===sid);if(!ses){toast('請選擇要繳費的場次');return}item=ses.kind==='open'?'場次費':'零打費'}
+  const d={memberId:uid,name:m.name||'',item,period:S.config.period||'',amount:+$('#pyAmt').value||0,date:$('#pyDate').value,last5:$('#pyLast5').value.trim(),note:$('#pyNote').value.trim(),status:'pending',at:new Date().toISOString()};
+  if(ses)Object.assign(d,{sessionId:sid,sessionLabel:sLabel(ses)});
+  if(await save(db.collection('payments').doc(),d,'已送出，等待球隊經理對帳確認')){$('#pyLast5').value='';$('#pyNote').value='';
+    if(sid){const v=S.signups.find(y=>y.id===uid)?.items?.[sid];if(v)await setSignup(uid,m.name,sid,{...v,reported:true},'已回報匯款，等待對帳')}}});
+document.addEventListener('click',async e=>{const b=e.target.closest('button');if(!b)return;const d=b.dataset;
+  if(d.wpay){if(!b.dataset.sure){b.dataset.sure='1';b.textContent='確認撤回？';return}const x=S.payments.find(y=>y.id===d.wpay);await del(db.collection('payments').doc(d.wpay),'已撤回');
+    if(x&&x.sessionId){const v=S.signups.find(y=>y.id===uid)?.items?.[x.sessionId];if(v)await setSignup(uid,x.name,x.sessionId,{...v,reported:false},'已撤回')}}
+  else if(d.okpay){const x=S.payments.find(y=>y.id===d.okpay);if(!x)return;b.disabled=true;const who=(authUser&&authUser.email)||'';const now=new Date().toISOString();
+    const fref=db.collection('fees').doc();
+    if(await save(fref,{memberId:x.memberId,name:x.name,item:x.item,period:x.period,amount:+x.amount||0,date:x.date,way:'匯款',note:('末五碼 '+(x.last5||'')+(x.note?'；'+x.note:'')),paymentId:x.id,confirmedBy:who,confirmedAt:now,sessionId:x.sessionId||'',sessionLabel:x.sessionLabel||''})){
+      if(x.sessionId)await markPaid(x.memberId,x.sessionId,true);
+      const c={...x};delete c.id;Object.assign(c,{status:'confirmed',confirmedBy:who,confirmedAt:now,feeId:fref.id});await save(db.collection('payments').doc(x.id),c,'已確認入帳')}else b.disabled=false}
+  else if(d.nopay){const x=S.payments.find(y=>y.id===d.nopay);if(!x)return;
+    const row=b.closest('td');if(!row.querySelector('input')){const i=document.createElement('input');i.placeholder='退回原因（例：查無入帳）';i.style.marginTop='6px';row.appendChild(i);b.textContent='送出退回';i.focus();return}
+    if(x.sessionId){const v=S.signups.find(y=>y.id===x.memberId)?.items?.[x.sessionId];if(v)await setSignup(x.memberId,x.name,x.sessionId,{...v,reported:false},' ')}
+    const c={...x};delete c.id;Object.assign(c,{status:'rejected',reason:row.querySelector('input').value.trim(),rejectedBy:(authUser&&authUser.email)||'',rejectedAt:new Date().toISOString()});await save(db.collection('payments').doc(x.id),c,'已退回')}
+});
+async function markPaid(mid,sid,on){const cur=S.paidSessions.find(p=>p.id===mid)||{};const d={...cur};delete d.id;if(on)d[sid]=true;else delete d[sid];return save(db.doc('paidSessions/'+mid),d)}
+let rosterBusy=false;
+async function syncRoster(){if(!admin||rosterBusy||!S.feesLoaded||!S.membersLoaded)return;const per=S.config.period||'';
+  const has=(id,fn)=>S.fees.some(f=>f.memberId===id&&f.period===per&&fn(f.item));
+  const ids=[...new Set(S.fees.filter(f=>f.period===per).map(f=>f.memberId))].filter(id=>has(id,isA)&&has(id,isV));
+  const list=ids.map(id=>({id,name:(S.members.find(m=>m.id===id)?.name)||(S.fees.find(f=>f.memberId===id)?.name)||'會員'})).sort((a,b)=>a.id<b.id?-1:1);
+  if(JSON.stringify({period:per,list})===JSON.stringify({period:S.roster.period||'',list:S.roster.list||[]}))return;
+  rosterBusy=true;try{await db.doc('roster/current').set({period:per,list,updatedAt:new Date().toISOString()})}catch(e){console.error(e)}rosterBusy=false}
+function renderFees(){renderPays();syncRoster();
   const period=S.config.period||'',amt=+S.config.amount||0,vf=+S.config.venueFee||0;
   const fees=S.fees.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||''));
   const shown=admin?fees:fees.filter(f=>f.memberId===uid);
   const inPeriod=S.fees.filter(f=>f.period===period);
   const sts=S.members.map(m=>feeSt(m.id));const my=feeSt(uid);
   $('#feeKpi').innerHTML=`<div class="kpi"><span class="mut">本期</span><b class="num" style="font-size:26px">${esc(period||'未設定')}</b></div><div class="kpi"><span class="mut">年繳會費</span><b class="num">${money(amt)}</b></div><div class="kpi"><span class="mut">場地分攤費</span><b class="num">${money(vf)}</b></div><div class="kpi"><span class="mut">每人合計應繳</span><b class="num">${money(amt+vf)}</b><span class="mut">繳費方式：匯款</span></div>`+
-   (admin?`<div class="kpi"><span class="mut">會費已繳</span><b class="num">${sts.filter(x=>x.a).length} / ${S.members.length}</b></div><div class="kpi"><span class="mut">場地費已繳</span><b class="num">${sts.filter(x=>x.v).length} / ${S.members.length}</b></div><div class="kpi"><span class="mut">本期已收</span><b class="num">${money(inPeriod.reduce((s,f)=>s+(+f.amount||0),0))}</b></div>`
-   :`<div class="kpi"><span class="mut">我的繳費狀態</span><div style="font-size:20px;margin-top:6px">${mark(my.a,'會費 ')}　${mark(my.v,'場地費 ')}</div></div>`);
+   (admin?`<div class="kpi"><span class="mut">會費已繳</span><b class="num">${sts.filter(x=>x.a).length} / ${S.members.length}</b></div><div class="kpi"><span class="mut">場地費已繳</span><b class="num">${sts.filter(x=>x.v).length} / ${S.members.length}</b></div><div class="kpi"><span class="mut">固定隊員（兩項皆繳）</span><b class="num">${sts.filter(x=>x.a&&x.v).length}</b></div><div class="kpi"><span class="mut">本期已收</span><b class="num">${money(inPeriod.reduce((s,f)=>s+(+f.amount||0),0))}</b></div>`
+   :`<div class="kpi"><span class="mut">我的繳費狀態</span><div style="font-size:20px;margin-top:6px">${mark(my.a,'會費 ',my.pa)}　${mark(my.v,'場地費 ',my.pv)}</div></div>`);
   $('#feeStatusCard').hidden=!admin;
   if(admin){$('#feeStatusTitle').textContent=`${period||'本期'}繳費狀況`;
     const ms=S.members.slice().sort((a,b)=>{const x=feeSt(a.id),y=feeSt(b.id);return (x.a+x.v)-(y.a+y.v)});
-    $('#feeStatus').innerHTML=ms.length?`<div class="chips">${ms.map(m=>{const t=feeSt(m.id);return `<span>${esc(m.name)}　${mark(t.a,'會費')} ${mark(t.v,'場地')}</span>`}).join('')}</div>`:'<p class="mut">尚無會員</p>'}
-  $('#feeList').innerHTML=shown.length?`<table class="stack"><thead><tr><th>日期</th><th>會員</th><th>項目</th><th>期別</th><th class="r">金額</th><th>方式</th><th>備註</th>${admin?'<th></th>':''}</tr></thead><tbody>${shown.map(f=>`<tr><td>${esc(f.date)}</td><td>${esc(f.name)}</td><td>${esc(f.item)}</td><td>${esc(f.period)}</td><td class="r num">${money(f.amount)}</td><td>${esc(f.way)}</td><td>${esc(f.note)}</td>${admin?`<td><button class="del" data-dfee="${esc(f.id)}">刪除</button></td>`:''}</tr>`).join('')}</tbody></table>`:'<p class="mut">尚無繳費紀錄</p>';
+    $('#feeStatus').innerHTML=ms.length?`<div class="chips">${ms.map(m=>{const t=feeSt(m.id);return `<span>${esc(m.name)}　${mark(t.a,'會費',t.pa)} ${mark(t.v,'場地',t.pv)}</span>`}).join('')}</div>`:'<p class="mut">尚無會員</p>'}
+  $('#feeList').innerHTML=shown.length?`<table class="stack"><thead><tr><th>日期</th><th>會員</th><th>項目</th><th>期別／場次</th><th class="r">金額</th><th>方式</th><th>備註</th>${admin?'<th></th>':''}</tr></thead><tbody>${shown.map(f=>`<tr><td>${esc(f.date)}</td><td>${esc(f.name)}</td><td>${esc(f.item)}</td><td>${esc(f.sessionLabel||f.period)}</td><td class="r num">${money(f.amount)}</td><td>${esc(f.way)}</td><td>${esc(f.note)}</td>${admin?`<td><button class="del" data-dfee="${esc(f.id)}">刪除</button></td>`:''}</tr>`).join('')}</tbody></table>`:'<p class="mut">尚無繳費紀錄</p>';
 }
 function finRows(){
-  return [...S.fees.map(f=>({date:f.date,t:'in',cat:'會費・'+(f.item||''),desc:(f.name||'')+' '+(f.period||''),amt:+f.amount||0,src:'fee'})),
+  return [...S.fees.map(f=>({date:f.date,t:'in',cat:f.item||'其他',desc:(f.name||'')+' '+(f.sessionLabel||f.period||''),amt:+f.amount||0,src:'fee'})),
    ...S.ledger.map(l=>({id:l.id,date:l.date,t:l.type,cat:l.cat,desc:l.desc,amt:+l.amount||0,src:'led'}))].sort((a,b)=>(a.date||'').localeCompare(b.date||''));
 }
 function renderFinance(){
   const rows=finRows();let bal=0;rows.forEach(r=>{bal+=r.t==='in'?r.amt:-r.amt;r.bal=bal});
   const inc=rows.filter(r=>r.t==='in').reduce((s,r)=>s+r.amt,0),out=rows.filter(r=>r.t==='out').reduce((s,r)=>s+r.amt,0);
   const feeInc=rows.filter(r=>r.src==='fee').reduce((s,r)=>s+r.amt,0);
-  $('#finKpi').innerHTML=`<div class="kpi"><span class="mut">目前結餘</span><b class="num" style="color:${bal<0?'var(--warn)':'var(--ok)'}">${money(bal)}</b></div><div class="kpi"><span class="mut">總收入</span><b class="num">${money(inc)}</b><span class="mut">含會費 ${money(feeInc)}</span></div><div class="kpi"><span class="mut">總支出</span><b class="num">${money(out)}</b></div>`;
+  $('#finKpi').innerHTML=`<div class="kpi"><span class="mut">目前結餘</span><b class="num" style="color:${bal<0?'var(--warn)':'var(--ok)'}">${money(bal)}</b></div><div class="kpi"><span class="mut">總收入</span><b class="num">${money(inc)}</b><span class="mut">會費＋場地 ${money(rows.filter(r=>r.src==='fee'&&/年繳會費|年費|場地分攤費|場地費/.test(r.cat)).reduce((a,r)=>a+r.amt,0))}・零打／場次 ${money(rows.filter(r=>r.src==='fee'&&/零打費|場次費|臨打費/.test(r.cat)).reduce((a,r)=>a+r.amt,0))}</span></div><div class="kpi"><span class="mut">總支出</span><b class="num">${money(out)}</b></div>`+(()=>{const pd=S.payments.filter(x=>x.status==='pending');return pd.length?`<div class="kpi"><span class="mut">待確認匯款（未列入）</span><b class="num pend">${money(pd.reduce((a,x)=>a+(+x.amount||0),0))}</b><span class="mut">${pd.length} 筆，請到「會費繳費」對帳</span></div>`:''})();
+  const ic={'年繳會費':0,'場地分攤費':0,'零打費':0,'場次費':0};rows.filter(r=>r.t==='in').forEach(r=>{const k=r.cat==='年費'?'年繳會費':r.cat==='場地費'?'場地分攤費':r.cat==='臨打費'?'零打費':r.cat;ic[k]=(ic[k]||0)+r.amt});
+  $('#finInc').innerHTML=bars(Object.entries(ic).filter(([k,v])=>v||['年繳會費','場地分攤費','零打費'].includes(k)),money);
   const cats={};rows.filter(r=>r.t==='out').forEach(r=>cats[r.cat]=(cats[r.cat]||0)+r.amt);
   $('#finCat').innerHTML=bars(Object.entries(cats).sort((a,b)=>b[1]-a[1]),money);
-  $('#finList').innerHTML=rows.length?`<div class="scroll"><table><thead><tr><th>日期</th><th>類別</th><th>說明</th><th class="r">收入</th><th class="r">支出</th><th class="r">結餘</th>${admin?'<th></th>':''}</tr></thead><tbody>${rows.slice().reverse().map(r=>`<tr><td style="white-space:nowrap">${esc(r.date)}</td><td>${esc(r.cat)}</td><td>${esc(r.desc)}</td><td class="r num">${r.t==='in'?money(r.amt):''}</td><td class="r num">${r.t==='out'?money(r.amt):''}</td><td class="r num">${money(r.bal)}</td>${admin?`<td>${r.src==='led'?`<button class="del" data-dled="${esc(r.id)}">刪除</button>`:'<span class="mut">會費頁</span>'}</td>`:''}</tr>`).join('')}</tbody></table></div><p class="mut">會費收入自動從「會費」頁帶入。</p>`:'<p class="mut">尚無收支紀錄</p>';
+  $('#finList').innerHTML=rows.length?`<div><table class="stack"><thead><tr><th>日期</th><th>類別</th><th>說明</th><th class="r">收入</th><th class="r">支出</th><th class="r">結餘</th>${admin?'<th></th>':''}</tr></thead><tbody>${rows.slice().reverse().map(r=>`<tr><td style="white-space:nowrap">${esc(r.date)}</td><td>${esc(r.cat)}</td><td>${esc(r.desc)}</td><td class="r num">${r.t==='in'?money(r.amt):''}</td><td class="r num">${r.t==='out'?money(r.amt):''}</td><td class="r num">${money(r.bal)}</td>${admin?`<td>${r.src==='led'?`<button class="del" data-dled="${esc(r.id)}">刪除</button>`:'<span class="mut">會費頁</span>'}</td>`:''}</tr>`).join('')}</tbody></table></div><p class="mut">會費收入只計入已對帳確認的款項，由「會費繳費」頁自動帶入。</p>`:'<p class="mut">尚無收支紀錄</p>';
 }
 function renderStats(){
   const past=S.sessions.filter(s=>s.date<=today).sort((a,b)=>a.date.localeCompare(b.date));
@@ -497,7 +621,8 @@ function renderStats(){
    `<div class="kpi"><span class="mut">本月場次</span><b class="num">${S.sessions.filter(s=>s.date.startsWith(month)).length}</b></div><div class="kpi"><span class="mut">已辦場次</span><b class="num">${past.length}</b></div><div class="kpi"><span class="mut">平均出席</span><b class="num">${avg.toFixed(1)}</b></div>`;
   $('#stSess').innerHTML=bars(past.slice(-10).map(s=>[s.date.slice(5)+' '+(s.venue||'').slice(0,4),count(s.id).n]),v=>v+' 人');
   const pastIds=new Set(past.map(s=>s.id));
-  $('#stTop').innerHTML=bars(S.signups.map(s=>[s.name||'會員',Object.keys(s.items||{}).filter(k=>pastIds.has(k)).length]).filter(r=>r[1]).sort((a,b)=>b[1]-a[1]).slice(0,10),v=>v+' 次');
+  const tally={};past.forEach(ss=>count(ss.id).names.forEach(x=>{tally[x.name]=(tally[x.name]||0)+1}));
+  $('#stTop').innerHTML=bars(Object.entries(tally).sort((a,b)=>b[1]-a[1]).slice(0,10),v=>v+' 次');
   if(admin){const g=k=>{const c={};S.members.forEach(m=>{const v=m[k]||'未填';c[v]=(c[v]||0)+1});return Object.entries(c).sort((a,b)=>b[1]-a[1])};
     $('#stRel').innerHTML=bars(g('rel'),v=>v+' 人');$('#stLvl').innerHTML=bars(g('level'),v=>v+' 人');
     const tc={'週六下午':0,'週日下午':0,'平日晚間':0,'其他':0};S.members.forEach(m=>(m.prefTimes||[]).forEach(t=>tc[t]=(tc[t]||0)+1));
@@ -516,52 +641,89 @@ document.addEventListener('change',async e=>{const sel=e.target.closest('select[
 function renderMembers(){renderAdmins();
   {const v=$('#mRole').value;$('#mRole').innerHTML=roleOpts(v);$('#mRole').value=v}
   const q=$('#mSearch').value.trim().toLowerCase();
-  const att=id=>Object.keys(S.signups.find(s=>s.id===id)?.items||{}).length;
+  const att=id=>S.sessions.filter(x=>x.date<=today&&count(x.id).names.some(y=>y.id===id)).length;
   const ms=S.members.filter(m=>!q||[m.name,m.nick,m.phone,m.rel,m.email,m.ref].join(' ').toLowerCase().includes(q)).sort((a,b)=>(a.name||'').localeCompare(b.name||'','zh-Hant'));
-  $('#memList').innerHTML=ms.length?`<table class="stack"><thead><tr><th>姓名</th><th>球隊職位</th><th>身分</th><th>程度</th><th>手機</th><th>Email</th><th>介紹人</th><th>宣誓</th><th>偏好時間／頻率</th><th>本期繳費</th><th class="r">報名次數</th><th></th></tr></thead><tbody>${ms.map(m=>`<tr><td><b>${esc(m.name)}</b>${m.nick?` <span class="mut">${esc(m.nick)}</span>`:''}${m.self?'':' <span class="mut">代建</span>'}</td><td><select class="roleSel" data-role="${esc(m.id)}" aria-label="球隊職位" style="min-height:36px;padding:4px 8px">${roleOpts(m.role)}</select></td><td>${esc(m.rel)}</td><td>${esc(m.level)}</td><td>${esc(m.phone)}</td><td>${esc(m.email)}</td><td>${esc(m.ref)}</td><td>${m.oathAt?'<span class="paid">✓ '+esc(m.oathAt)+'</span>':'<span class="mut">—</span>'}</td><td>${esc(prefText(m))}${m.freq?`<div class="mut">${esc(m.freq)}</div>`:''}</td><td>${(t=>mark(t.a,'會費')+' '+mark(t.v,'場地'))(feeSt(m.id))}</td><td class="r num">${att(m.id)}</td><td><div class="row">${m.self?'':`<button class="ghost" style="min-height:36px;padding:4px 10px" data-emem="${esc(m.id)}">編輯</button>`}<button class="del" data-dmem="${esc(m.id)}">刪除</button></div></td></tr>`).join('')}</tbody></table>`:'<p class="mut">尚無會員</p>';
+  $('#memList').innerHTML=ms.length?`<table class="stack"><thead><tr><th>姓名</th><th>球隊職位</th><th>身分</th><th>生日／身分證</th><th>程度</th><th>手機</th><th>Email</th><th>介紹人</th><th>宣誓</th><th>偏好時間／頻率</th><th>本期繳費</th><th class="r">出席次數</th><th></th></tr></thead><tbody>${ms.map(m=>`<tr><td><b>${esc(m.name)}</b>${m.nick?` <span class="mut">${esc(m.nick)}</span>`:''}${m.self?'':' <span class="mut">代建</span>'}</td><td><select class="roleSel" data-role="${esc(m.id)}" aria-label="球隊職位" style="min-height:36px;padding:4px 8px">${roleOpts(m.role)}</select></td><td>${esc(m.rel)}</td><td>${esc(m.birth||'')}<div class="mut">${esc(maskId(m.nid))}</div></td><td>${esc(m.level)}</td><td>${esc(m.phone)}</td><td>${esc(m.email)}</td><td>${esc(m.ref)}</td><td>${m.oathAt?'<span class="paid">✓ '+esc(m.oathAt)+'</span>':'<span class="mut">—</span>'}</td><td>${esc(prefText(m))}${m.freq?`<div class="mut">${esc(m.freq)}</div>`:''}</td><td>${(t=>mark(t.a,'會費',t.pa)+' '+mark(t.v,'場地',t.pv))(feeSt(m.id))}</td><td class="r num">${att(m.id)}</td><td><div class="row">${m.self?'':`<button class="ghost" style="min-height:36px;padding:4px 10px" data-emem="${esc(m.id)}">編輯</button>`}<button class="del" data-dmem="${esc(m.id)}">刪除</button></div></td></tr>`).join('')}</tbody></table>`:'<p class="mut">尚無會員</p>';
 }
-const PF={name:'pName',nick:'pNick',rel:'pRel',ref:'pRef',phone:'pPhone',email:'pEmail',gender:'pGender',level:'pLevel',paddle:'pPaddle',size:'pSize',emer:'pEmer',emerPhone:'pEmerPhone',note:'pNote'};
+const PF={birth:'pBirth',nid:'pNid',name:'pName',nick:'pNick',rel:'pRel',ref:'pRef',phone:'pPhone',email:'pEmail',gender:'pGender',level:'pLevel',paddle:'pPaddle',size:'pSize',emer:'pEmer',emerPhone:'pEmerPhone',note:'pNote'};
 function getPref(p){const t=[...document.querySelectorAll(`input[name=${p}T]:checked`)].map(i=>i.value);return {prefTimes:t,prefOther:t.includes('其他')?$('#'+p+'OtherTime').value.trim():'',freq:document.querySelector(`input[name=${p}F]:checked`)?.value||''}}
 function setPref(p,m){document.querySelectorAll(`input[name=${p}T]`).forEach(i=>i.checked=(m.prefTimes||[]).includes(i.value));$('#'+p+'OtherTime').value=m.prefOther||'';document.querySelectorAll(`input[name=${p}F]`).forEach(i=>i.checked=i.value===m.freq)}
 const prefText=m=>[...(m.prefTimes||[]).filter(x=>x!=='其他'),m.prefOther].filter(Boolean).join('、');
+const NIDL={A:10,B:11,C:12,D:13,E:14,F:15,G:16,H:17,I:34,J:18,K:19,L:20,M:21,N:22,O:35,P:23,Q:24,R:25,S:26,T:27,U:28,V:29,W:32,X:30,Y:31,Z:33};
+function validNid(v){v=String(v||'').trim().toUpperCase();if(/^[A-Z][1289]\d{8}$/.test(v)){const n=NIDL[v[0]];let sum=Math.floor(n/10)+(n%10)*9;for(let i=1;i<9;i++)sum+=(+v[i])*(9-i);sum+=+v[9];return sum%10===0}
+  if(/^[A-Z]\d{9}$/.test(v))return false;return /^[A-Z0-9]{6,20}$/.test(v)}
+const maskId=v=>v?String(v).slice(0,3)+'****'+String(v).slice(-3):'';
 function fillProfile(m){setPref('p',m);for(const k in PF)$('#'+PF[k]).value=m[k]||'';$('#pConsent').checked=!!m.consent;$('#pOath').checked=!!m.oathAt;$('#pMsg').textContent=m.updatedAt?'上次更新 '+m.updatedAt.slice(0,10):''}
 
 /* events */
 async function saveProfile(){if(!uid){toast('請先登入');return}
+  $('#pNid').value=$('#pNid').value.trim().toUpperCase();if(!validNid($('#pNid').value)){toast('身分證字號格式不正確，請再確認');$('#pNid').focus();return}
   const old=myMember()||{};const d={...old};delete d.id;for(const k in PF)d[k]=$('#'+PF[k]).value.trim();
   Object.assign(d,getPref('p'),{oathAt:$('#pOath').checked?(old.oathAt||today):'',consent:true,self:true,updatedAt:new Date().toISOString(),joinedAt:old.joinedAt||today});
   if(await save(db.collection('members').doc(uid),d,'資料已儲存')){
     const sg=S.signups.find(s=>s.id===uid);if(sg&&sg.name!==d.name){const c=JSON.parse(JSON.stringify(sg));delete c.id;c.name=d.name;await save(db.collection('signups').doc(uid),c)}}}
 $('#fProf').addEventListener('submit',e=>{e.preventDefault();if(uid)saveProfile()});
-$('#fSess').addEventListener('submit',async e=>{e.preventDefault();
+async function compressImg(file){const bmp=await createImageBitmap(file);let max=1400,q=.82,url='';
+  for(let i=0;i<8;i++){const sc=Math.min(1,max/Math.max(bmp.width,bmp.height));const c=document.createElement('canvas');c.width=Math.round(bmp.width*sc);c.height=Math.round(bmp.height*sc);
+    const g=c.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,c.width,c.height);g.drawImage(bmp,0,0,c.width,c.height);url=c.toDataURL('image/jpeg',q);if(url.length<850000)return url;q=Math.max(.45,q-.1);max=Math.round(max*.85)}
+  throw new Error('圖片太大')}
+async function saveMedia(file){if(!file)return '';let url;try{url=await compressImg(file)}catch(_){toast('圖片無法處理，請換一張較小的圖片');return null}
+  const ref=db.collection('media').doc();if(!(await save(ref,{img:url,at:new Date().toISOString()})))return null;S.media[ref.id]=url;return ref.id}
+const feeLbl=k=>k==='open'?'每人費用（元，0＝免費）':'零打費（元／人）';
+$('#sKind').addEventListener('change',()=>{$('#sFeeLbl').textContent=feeLbl($('#sKind').value)});
+$('#eKind').addEventListener('change',()=>{$('#eFeeLbl').textContent=feeLbl($('#eKind').value)});
+$('#fSess').addEventListener('submit',async e=>{e.preventDefault();const btn=e.target.querySelector('button');btn.disabled=true;
+  try{const mid=await saveMedia($('#sImg').files[0]);if(mid===null)return;
   const w=Math.max(1,Math.min(26,+$('#sWeeks').value||1));const base=new Date($('#sDate').value+'T00:00');
+  const link=$('#sLink').value.trim();if(link&&!/^https:\/\//.test(link)){toast('連結請以 https:// 開頭');return}
   for(let i=0;i<w;i++){const d=new Date(base);d.setDate(d.getDate()+7*i);
-    await save(db.collection('sessions').doc(),{date:ymd(d),start:$('#sStart').value,end:$('#sEnd').value,venue:$('#sVenue').value.trim(),cap:+$('#sCap').value,fee:+$('#sFee').value||0,note:$('#sNote').value.trim()})}
-  toast(`已建立 ${w} 個場次`);});
-async function setSignup(memberId,name,sid,n){
-  const cur=S.signups.find(s=>s.id===memberId);const doc=cur?JSON.parse(JSON.stringify(cur)):{items:{}};delete doc.id;doc.name=name||doc.name||'會員';doc.items=doc.items||{};
-  if(n)doc.items[sid]={n,at:new Date().toISOString()};else delete doc.items[sid];
-  return save(db.collection('signups').doc(memberId),doc,n?'報名成功':'已取消');
+    await save(db.collection('sessions').doc(),{kind:$('#sKind').value,date:ymd(d),start:$('#sStart').value,end:$('#sEnd').value,venue:$('#sVenue').value.trim(),cap:+$('#sCap').value,fee:+$('#sFee').value||0,note:$('#sNote').value.trim(),desc:$('#sDesc').value.trim(),link,mediaId:mid||''})}
+  toast(`已建立 ${w} 個場次`);$('#sImg').value='';}finally{btn.disabled=false}});
+let editSid=null;
+function openEdit(sid){const x=S.sessions.find(y=>y.id===sid);if(!x)return;editSid=sid;
+  const v={eKind:x.kind||'regular',eDate:x.date,eStart:x.start,eEnd:x.end,eVenue:x.venue,eCap:x.cap,eFee:x.fee,eNote:x.note||'',eDesc:x.desc||'',eLink:x.link||''};
+  for(const k in v)$('#'+k).value=v[k]??'';$('#eFeeLbl').textContent=feeLbl(v.eKind);$('#eImg').value='';$('#eImgDel').checked=false;$('#eImgDelWrap').hidden=!x.mediaId;$('#sessModal').hidden=false}
+$('#eClose').addEventListener('click',()=>{$('#sessModal').hidden=true});
+$('#sessModal').addEventListener('click',e=>{if(e.target.id==='sessModal')$('#sessModal').hidden=true});
+$('#fSessEdit').addEventListener('submit',async e=>{e.preventDefault();const x=S.sessions.find(y=>y.id===editSid);if(!x)return;const btn=e.target.querySelector('button');btn.disabled=true;
+  try{const link=$('#eLink').value.trim();if(link&&!/^https:\/\//.test(link)){toast('連結請以 https:// 開頭');return}
+  let mid=x.mediaId||'';if($('#eImgDel').checked)mid='';const f=$('#eImg').files[0];if(f){const m2=await saveMedia(f);if(m2===null)return;mid=m2}
+  const d={...x};delete d.id;Object.assign(d,{kind:$('#eKind').value,date:$('#eDate').value,start:$('#eStart').value,end:$('#eEnd').value,venue:$('#eVenue').value.trim(),cap:+$('#eCap').value,fee:+$('#eFee').value||0,note:$('#eNote').value.trim(),desc:$('#eDesc').value.trim(),link,mediaId:mid});
+  if(await save(db.collection('sessions').doc(x.id),d,'場次已更新'))$('#sessModal').hidden=true}finally{btn.disabled=false}});
+document.addEventListener('click',e=>{const im=e.target.closest('img[data-zoom]');if(im){$('#lightbox img').src=im.src;$('#lightbox').hidden=false;return}
+  if(e.target.closest('#lightbox'))$('#lightbox').hidden=true;
+  const es=e.target.closest('[data-esess]');if(es)openEdit(es.dataset.esess);
+  const gp=e.target.closest('[data-gopay]');if(gp){location.hash='fees';setTimeout(()=>{$('#pyItem').value='場次費';pyDefault(gp.dataset.gopay);$('#payReportCard').scrollIntoView({behavior:'smooth'})},80)}});
+async function setSignup(memberId,name,sid,val,msg){
+  const cur=S.signups.find(x=>x.id===memberId);const doc=cur?JSON.parse(JSON.stringify(cur)):{items:{}};delete doc.id;doc.name=name||doc.name||'會員';doc.items=doc.items||{};
+  if(typeof val==='number')val=val?{n:val,at:new Date().toISOString()}:null;
+  if(val)doc.items[sid]=val;else delete doc.items[sid];
+  return save(db.collection('signups').doc(memberId),doc,msg||(val?(val.leave?'已請假，名額釋出給零打':'報名成功'):'已取消'));
 }
 document.addEventListener('click',async e=>{const b=e.target.closest('button');if(!b)return;const d=b.dataset;
-  if(d.join){const m=myMember();if(!m){location.hash='profile';toast('請先填寫會員資料');return}
-    const s=S.sessions.find(x=>x.id===d.join),n=+$('#g_'+d.join).value||1;if(s.cap&&count(s.id).n+n>s.cap){toast('名額不足');return}
+  if(d.leave){const m=myMember();const td=b.closest('.row');if(!td.querySelector('input')){const i=document.createElement('input');i.placeholder='請假原因（可不填）';i.style.minWidth='0';td.insertBefore(i,b);b.textContent='確認請假';i.focus();return}
+    b.disabled=true;await setSignup(uid,m?.name,d.leave,{leave:true,reason:td.querySelector('input').value.trim(),at:new Date().toISOString()})}
+  else if(d.unleave){if(count(d.unleave).free<1){toast('名額已由零打補上，請洽球隊經理');return}b.disabled=true;await setSignup(uid,myMember()?.name,d.unleave,null,'已取消請假，恢復出席')}
+  else if(d.pxleave){const ids=[...document.querySelectorAll('#lv_'+d.pxleave+' input:checked')].map(i=>i.value);if(!ids.length){toast('請先勾選隊員');return}
+    b.disabled=true;for(const mid of ids)await setSignup(mid,memName(mid)||(S.roster.list||[]).find(r=>r.id===mid)?.name,d.pxleave,{leave:true,reason:'管理員代請假',at:new Date().toISOString()},'已登記請假');b.disabled=false}
+  else if(d.join){const m=myMember();if(!m){location.hash='profile';toast('請先填寫會員資料');return}
+    const s=S.sessions.find(x=>x.id===d.join),n=+$('#g_'+d.join).value||1;if(s.cap&&count(s.id).free<n){toast('零打名額不足');return}
     b.disabled=true;await setSignup(uid,m.name,d.join,n)}
   else if(d.cancel){b.disabled=true;await setSignup(uid,myMember()?.name,d.cancel,0)}
   else if(d.pxall){document.querySelectorAll('#px_'+d.pxall+' input').forEach(i=>i.checked=true)}
   else if(d.proxy){const ids=[...document.querySelectorAll('#px_'+d.proxy+' input:checked')].map(i=>i.value);if(!ids.length){toast('請先勾選會員');return}
-    const s=S.sessions.find(x=>x.id===d.proxy);if(s.cap&&count(s.id).n+ids.length>s.cap){toast(`超過名額，最多還能登記 ${Math.max(0,s.cap-count(s.id).n)} 人`);return}
+    const s=S.sessions.find(x=>x.id===d.proxy);if(s.cap&&count(s.id).free<ids.length){toast(`超過零打名額，最多還能登記 ${count(s.id).free} 人`);return}
     b.disabled=true;let ok=0;for(const mid of ids){if(await setSignup(mid,memName(mid),d.proxy,1))ok++}b.disabled=false;toast(`已登記 ${ok} 人`)}
-  else if(d.kick){const [sid,mid]=d.kick.split('|');await setSignup(mid,memName(mid),sid,0)}
+  else if(d.kick){const [sid,mid]=d.kick.split('|');await setSignup(mid,memName(mid)||(S.roster.list||[]).find(r=>r.id===mid)?.name,sid,null,'已移除')}
   else if(d.dsess&&b.dataset.sure){await del(db.collection('sessions').doc(d.dsess),'場次已刪除')}
   else if(d.dsurv&&b.dataset.sure){await del(db.collection('surveys').doc(d.dsurv),'問卷已刪除')}
-  else if(d.dfee&&b.dataset.sure){await del(db.collection('fees').doc(d.dfee),'已刪除')}
+  else if(d.dfee&&b.dataset.sure){const f=S.fees.find(x=>x.id===d.dfee);await del(db.collection('fees').doc(d.dfee),'已刪除');if(f&&f.sessionId&&!S.fees.some(x=>x.id!==f.id&&x.memberId===f.memberId&&x.sessionId===f.sessionId))await markPaid(f.memberId,f.sessionId,false)}
   else if(d.dled&&b.dataset.sure){await del(db.collection('ledger').doc(d.dled),'已刪除')}
   else if(d.dmem&&b.dataset.sure){const id=d.dmem;await del(db.collection('members').doc(id),'會員已刪除');await syncRoles(S.members.filter(x=>x.id!==id))}
   else if(d.dsess||d.dsurv||d.dfee||d.dled||d.dmem){b.dataset.sure='1';b.textContent='再按一次確認';setTimeout(()=>{if(b.isConnected){delete b.dataset.sure;b.textContent='刪除'}},3000)}
   else if(d.toggle){const sv=S.surveys.find(x=>x.id===d.toggle);const c={...sv};delete c.id;c.open=!sv.open;await save(db.collection('surveys').doc(sv.id),c,c.open?'已開放':'已結束')}
   else if(d.redo){const r=S.responses.find(x=>x.id===uid);const c=JSON.parse(JSON.stringify(r));delete c.id;delete c.s[d.redo];await save(db.collection('responses').doc(uid),c)}
-  else if(d.emem){const m=S.members.find(x=>x.id===d.emem);editId=m.id;for(const [k,id] of Object.entries({name:'mName',rel:'mRel',ref:'mRef',phone:'mPhone',email:'mEmail',level:'mLevel',size:'mSize',note:'mNote'}))$('#'+id).value=m[k]||'';
+  else if(d.emem){const m=S.members.find(x=>x.id===d.emem);editId=m.id;for(const [k,id] of Object.entries({name:'mName',rel:'mRel',ref:'mRef',phone:'mPhone',email:'mEmail',birth:'mBirth',nid:'mNid',level:'mLevel',size:'mSize',note:'mNote'}))$('#'+id).value=m[k]||'';
     setPref('m',m);$('#mRole').innerHTML=roleOpts(m.role);$('#mRole').value=m.role||'';$('#mBox').open=true;$('#mBtn').textContent='儲存修改';$('#mCancel').hidden=false;$('#mSum').textContent='編輯會員：'+m.name;$('#mBox').scrollIntoView({behavior:'smooth'})}
 });
 $('#fSurv').addEventListener('submit',async e=>{e.preventDefault();
@@ -576,26 +738,33 @@ document.addEventListener('submit',async e=>{const f=e.target.closest('form[data
   doc.name=myMember()?.name||doc.name||'會員';doc.s[sid]={a,at:new Date().toISOString()};
   await save(db.collection('responses').doc(uid),doc,'已送出，感謝填寫')});
 $('#fCfg').addEventListener('submit',async e=>{e.preventDefault();await save(db.doc('config/main'),{period:$('#cPeriod').value.trim(),amount:+$('#cAmt').value||0,venueFee:+$('#cVenue').value||0},'設定已更新');$('#feePeriod').value=$('#cPeriod').value.trim();feeDefault()});
-function feeDefault(){const it=$('#feeItem').value;const v=it==='年繳會費'?S.config.amount:it==='場地分攤費'?S.config.venueFee:'';$('#feeAmt').value=v||''}
+function feeDefault(){const it=$('#feeItem').value,isS=it==='零打費'||it==='場次費';$('#feeSessWrap').hidden=!isS;
+  if(isS){const mid=$('#feeMem').value,cur=$('#feeSess').value;const l=S.sessions.filter(x=>S.signups.find(y=>y.id===mid)?.items?.[x.id]&&!S.signups.find(y=>y.id===mid).items[x.id].leave).sort((a,b)=>a.date.localeCompare(b.date));
+    $('#feeSess').innerHTML=l.length?l.map(x=>`<option value="${esc(x.id)}">${esc(sLabel(x))}</option>`).join(''):'<option value="">此會員沒有報名的場次</option>';if(cur&&l.some(x=>x.id===cur))$('#feeSess').value=cur;
+    const x=S.sessions.find(y=>y.id===$('#feeSess').value),v=x&&S.signups.find(y=>y.id===mid)?.items?.[x.id];$('#feeAmt').value=x?(+x.fee||0)*(+(v&&v.n)||1):'';return}
+  const v=it==='年繳會費'?S.config.amount:it==='場地分攤費'?S.config.venueFee:'';$('#feeAmt').value=v||''}
+$('#feeMem').addEventListener('change',feeDefault);$('#feeSess').addEventListener('change',feeDefault);
 $('#feeItem').addEventListener('change',feeDefault);
 $('#fFee').addEventListener('submit',async e=>{e.preventDefault();const mid=$('#feeMem').value;if(!mid)return;
-  if(await save(db.collection('fees').doc(),{memberId:mid,name:memName(mid),item:$('#feeItem').value,period:$('#feePeriod').value.trim(),amount:+$('#feeAmt').value||0,date:$('#feeDate').value,way:'匯款',note:$('#feeNote').value.trim()},'繳費已登錄'))$('#feeNote').value=''});
+  const it=$('#feeItem').value,fsid=(it==='零打費'||it==='場次費')?$('#feeSess').value:'';if((it==='零打費'||it==='場次費')&&!fsid){toast('請選擇場次');return}
+  if(await save(db.collection('fees').doc(),{sessionId:fsid,sessionLabel:fsid?sLabel(S.sessions.find(x=>x.id===fsid)):'',memberId:mid,name:memName(mid),item:it,period:$('#feePeriod').value.trim(),amount:+$('#feeAmt').value||0,date:$('#feeDate').value,way:'匯款',note:$('#feeNote').value.trim(),confirmedBy:(authUser&&authUser.email)||'',confirmedAt:new Date().toISOString()},'繳費已登錄')){$('#feeNote').value='';if(fsid)await markPaid(mid,fsid,true)}});
 $('#fLed').addEventListener('submit',async e=>{e.preventDefault();
   if(await save(db.collection('ledger').doc(),{date:$('#lDate').value,type:$('#lType').value,cat:$('#lCat').value,amount:+$('#lAmt').value||0,desc:$('#lDesc').value.trim()},'已新增')){$('#lAmt').value='';$('#lDesc').value=''}});
 function resetMem(){editId=null;$('#fMem').reset();setPref('m',{});$('#mBtn').textContent='新增會員';$('#mCancel').hidden=true;$('#mSum').textContent='＋ 代為建檔（不使用平台的親友）'}
 $('#mCancel').addEventListener('click',resetMem);
 $('#fMem').addEventListener('submit',async e=>{e.preventDefault();
   const old=editId?S.members.find(m=>m.id===editId):{};const d={...old};delete d.id;
-  for(const [k,id] of Object.entries({name:'mName',rel:'mRel',ref:'mRef',phone:'mPhone',email:'mEmail',level:'mLevel',size:'mSize',note:'mNote'}))d[k]=$('#'+id).value.trim();
+  for(const [k,id] of Object.entries({name:'mName',rel:'mRel',ref:'mRef',phone:'mPhone',email:'mEmail',birth:'mBirth',nid:'mNid',level:'mLevel',size:'mSize',note:'mNote'}))d[k]=$('#'+id).value.trim();
+  d.nid=String(d.nid||'').toUpperCase();if(d.nid&&!validNid(d.nid)){toast('身分證字號格式不正確');return}
   Object.assign(d,getPref('m'));d.role=$('#mRole').value;d.self=false;d.updatedAt=new Date().toISOString();d.joinedAt=old.joinedAt||today;
   const id=editId||('m_'+Date.now().toString(36));
   if(await save(db.collection('members').doc(id),d,editId?'已更新':'會員已新增')){resetMem();await syncRoles(S.members.filter(x=>x.id!==id).concat([{...d,id}]))}});
 $('#mSearch').addEventListener('input',renderMembers);
-$('#mCopy').addEventListener('click',async()=>{const h=['姓名','暱稱','身分','介紹人','手機','Email','程度','球衣','緊急聯絡人','緊急電話','加入日','宣誓日','偏好時間','球敘頻率','球隊職位'];
+$('#mCopy').addEventListener('click',async()=>{const h=['姓名','出生年月日','身分證字號','暱稱','身分','介紹人','手機','Email','程度','球衣','緊急聯絡人','緊急電話','加入日','宣誓日','偏好時間','球敘頻率','球隊職位'];
   const q=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
-  const csv=[h.join(','),...S.members.map(m=>[m.name,m.nick,m.rel,m.ref,m.phone,m.email,m.level,m.size,m.emer,m.emerPhone,m.joinedAt,m.oathAt,prefText(m),m.freq,m.role].map(q).join(','))].join('\n');
+  const csv=[h.join(','),...S.members.map(m=>[m.name,m.birth,m.nid,m.nick,m.rel,m.ref,m.phone,m.email,m.level,m.size,m.emer,m.emerPhone,m.joinedAt,m.oathAt,prefText(m),m.freq,m.role].map(q).join(','))].join('\n');
   try{await navigator.clipboard.writeText(csv);toast('已複製，可貼到 Excel / Google 試算表')}catch(_){toast('無法複製')}});
-$('#feeDate').value=today;$('#lDate').value=today;$('#sDate').value=today;
+$('#feeDate').value=today;$('#pyDate').value=today;$('#lDate').value=today;$('#sDate').value=today;
 
 /* auth UI */
 function renderAuth(){
@@ -628,6 +797,7 @@ function renderAdmins(){if(!admin)return;const boot=(window.ADMIN_EMAILS||[]).ma
 const _origProf=$('#fProf');
 _origProf.addEventListener('submit',async e=>{if(uid||!regMode)return;e.preventDefault();e.stopImmediatePropagation();
   if($('#rgPass').value!==$('#rgPass2').value){toast('兩次密碼不一致');return}
+  if(!validNid($('#pNid').value)){toast('身分證字號格式不正確，請再確認');return}
   if(!$('#pConsent').checked){toast('請勾選個資同意');return}
   try{const c=await FB.register($('#rgEmail').value.trim(),$('#rgPass').value,$('#pName').value.trim());
     uid=c.user.uid;db=FB.db;regMode=false;
@@ -646,7 +816,7 @@ function start(){
     stopAll();pub('config/intro',sn=>{S.introLoadedOnce=true;S.introExists=sn.exists;S.intro=sn.exists?sn.data():{};render()});
     pub('config/main',sn=>{S.config=sn.exists?sn.data():{};if(admin&&!$('#cPeriod').value){$('#cPeriod').value=S.config.period||'';$('#cAmt').value=S.config.amount||'';$('#cVenue').value=S.config.venueFee||''}render()});
     pub('config/roles',sn=>{S.roles=sn.exists?(sn.data().list||[]):[];render()});
-    Object.assign(S,{admins:[],members:[],sessions:[],signups:[],fees:[],ledger:[],surveys:[],responses:[]});profLoaded=false;
+    Object.assign(S,{paidSessions:[],roster:{},payments:[],admins:[],members:[],sessions:[],signups:[],fees:[],ledger:[],surveys:[],responses:[]});profLoaded=false;
     if(!u||(authUser&&authUser.uid!==u.uid)){$('#fProf').reset();setPref('p',{});$('#pMsg').textContent=''}
     $('#lgPass').value='';authUser=u;uid=u?u.uid:null;admin=false;
     if(!u){$('#who').textContent='訪客（尚未登入）';status('');render();return}
@@ -662,11 +832,12 @@ function start(){
     clearTimeout(timer);timer=setTimeout(()=>status('資料暫時連不上，畫面可能不是最新。'),10000);
     const ok=()=>{clearTimeout(timer);status('')};
     const err=e=>{clearTimeout(timer);console.error(e);if(e.code==='permission-denied')status('部分資料沒有讀取權限；若你是管理員，請確認 Firestore 規則已發布。')};
-    const col=(q,key)=>unsubs.push(q.onSnapshot(sn=>{ok();S[key]=sn.docs.map(d=>({id:d.id,...d.data()}));render()},err));
+    const col=(q,key)=>unsubs.push(q.onSnapshot(sn=>{ok();S[key]=sn.docs.map(d=>({id:d.id,...d.data()}));S[key+'Loaded']=true;render()},err));
     const one=(p,key)=>unsubs.push(db.doc(p).onSnapshot(sn=>{ok();S[key]=sn.exists?[{id:sn.id,...sn.data()}]:[];render()},err));
-    col(db.collection('sessions'),'sessions');col(db.collection('signups'),'signups');col(db.collection('ledger'),'ledger');col(db.collection('surveys'),'surveys');
-    if(admin){col(db.collection('members'),'members');col(db.collection('fees'),'fees');col(db.collection('responses'),'responses');col(db.collection('admins'),'admins')}
-    else{one('members/'+uid,'members');one('responses/'+uid,'responses');col(db.collection('fees').where('memberId','==',uid),'fees')}
+    unsubs.push(db.doc('roster/current').onSnapshot(sn=>{S.roster=sn.exists?sn.data():{};render()},err));
+    col(db.collection('sessions'),'sessions');col(db.collection('paidSessions'),'paidSessions');col(db.collection('signups'),'signups');col(db.collection('ledger'),'ledger');col(db.collection('surveys'),'surveys');
+    if(admin){col(db.collection('members'),'members');col(db.collection('fees'),'fees');col(db.collection('responses'),'responses');col(db.collection('admins'),'admins');col(db.collection('payments'),'payments')}
+    else{one('members/'+uid,'members');one('responses/'+uid,'responses');col(db.collection('fees').where('memberId','==',uid),'fees');col(db.collection('payments').where('memberId','==',uid),'payments')}
     render();
   });
 }

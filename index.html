@@ -128,6 +128,10 @@ table{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding-bl
 <div class="row" style="margin-top:14px"><a href="#profile"><button type="button" class="ball">填寫會員資料</button></a><a href="#sessions"><button type="button" class="ghost">報名場次</button></a></div></div>
 </div>
 <div class="card"><h3>球隊組織架構</h3><div class="org" id="iOrg"></div></div>
+<div class="card" id="tierCard" hidden><h3>隊員組成 <span class="mut" id="tierPer" style="font-weight:400;font-size:14px"></span></h3>
+<div class="kpis" id="tierKpi" style="margin-bottom:6px;grid-template-columns:repeat(auto-fill,minmax(130px,1fr))"></div>
+<p class="mut" style="margin:0">固定隊友＝當期年繳會費與場地分攤費皆已確認入帳；正式隊友＝已繳年繳會費；會員＝已註冊、尚未完成年繳會費。</p>
+<div id="tierNames"></div></div>
 <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr))">
 <div class="card"><h3>費用說明</h3><div id="iFees"></div></div>
 <div class="bank" id="iBank"></div>
@@ -289,7 +293,7 @@ table{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding-bl
 
 <section id="stats">
 <h2>統計</h2>
-<div class="kpis" id="stKpi"></div>
+<div class="kpis" id="stKpi" style="grid-template-columns:repeat(auto-fill,minmax(130px,1fr))"></div>
 <div class="grid">
 <div class="card"><h3>近期場次出席</h3><div id="stSess"></div></div>
 <div class="card"><h3>出席排行</h3><div id="stTop"></div></div>
@@ -391,7 +395,7 @@ const today=ymd(new Date());
 const WK='日一二三四五六';
 let db=null,user=null,uid=null,authUser=null,admin=false,readonly=false,profLoaded=false,editId=null,regMode=false;
 const SEED={"intro": {"about": "台北創新匹克球隊由台北創新網路扶輪社（The Rotary e Club of Taipei Gathering Heart）社友與寶眷組成，第一階段開放報名。邀請1-2位匹克球教練，有系統打造基礎功，歡迎社友加入運動行列。", "bank": {"acct": "0933253650", "bank": "王道銀行", "branch": "營業部 0011", "code": "048", "holder": "張庭", "note": "匯款後請於匹克群告知姓名與帳號末五碼。"}, "facts": [{"k": "球敘開跑日", "v": "預計 12 月開始"}, {"k": "球敘時間", "v": "每週六或每週日 下午 2:00～5:00"}, {"k": "球敘地點", "v": "崇光禮堂"}, {"k": "報名人數", "v": "上限 16 人"}, {"k": "報名資格", "v": "本社社員及寶眷"}, {"k": "報名費用", "v": "年繳會費 $1,000＋場地分攤費 $2,000（匯款）"}], "fees": [{"amt": "$1,000", "item": "年繳會費", "note": "固定年繳"}, {"amt": "$2,000", "item": "場地分攤費", "note": "場地租金依人數分攤半年繳"}, {"amt": "$200", "item": "場地報名費（臨打）", "note": "非固定隊員單次參加"}, {"amt": "匯款", "item": "繳費方式", "note": "目前僅接受匯款，帳號見右方"}], "oath": "宣誓人在此莊嚴宣誓：\n\n我自願加入台北創新匹克球隊，\n認同球隊宗旨與核心價值。\n\n我願以健康為本、品格為先、團隊為榮，\n遵守球隊規範，尊重每一位隊友，\n積極學習、持續精進球技。\n\n我承諾，將球敘時間優先排入個人工作與生活行程，\n珍惜每一次團練與交流，\n不輕易缺席、不輕易脫隊，\n與隊友共同成長。\n\n我願以匹克球結交朋友，以運動促進健康，\n以公益回饋社會，\n實踐扶輪「服務超我」的精神，\n讓每一次揮拍，都成為影響他人的力量。\n\n我願與所有隊友攜手前行，\n共同打造一支充滿紀律、熱情、健康、\n公益與影響力的球隊。\n\n揮出創新，公益得分！\n健康同行，服務同行！", "org": [{"lv": 1, "name": "", "note": "", "role": "台北創新網路扶輪社"}, {"lv": 2, "name": "PP sJoe", "note": "", "role": "榮董"}, {"lv": 2, "name": "PP Alison", "note": "", "role": "隊長"}, {"lv": 2, "name": "PE SamLu", "note": "", "role": "副隊長"}, {"lv": 3, "name": "專業匹克球教練（1-2位）", "note": "", "role": "教練"}, {"lv": 3, "name": "Yvonne", "note": "會費收支、對帳", "role": "球隊經理"}, {"lv": 4, "name": "參與球隊活動", "note": "", "role": "一般會員"}], "tag": "揮出創新，公益得分！ 健康同行，服務同行！"}, "main": {"amount": 1000, "period": "2026/11–2027/10", "venueFee": 2000}};
-const S={creditAdj:[],cancels:[],media:{},paidSessions:[],roster:{},payments:[],admins:[],roles:[],members:[],sessions:[],signups:[],fees:[],ledger:[],surveys:[],responses:[],config:{}};
+const S={tstats:{},creditAdj:[],cancels:[],media:{},paidSessions:[],roster:{},payments:[],admins:[],roles:[],members:[],sessions:[],signups:[],fees:[],ledger:[],surveys:[],responses:[],config:{}};
 function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('on'),2200)}
 function status(t){const e=$('#status');e.hidden=!t;e.textContent=t||''}
 async function save(ref,data,ok){
@@ -409,15 +413,15 @@ function route(){let h=location.hash.slice(1);if(!TABS.includes(h)||((h==='membe
 addEventListener('hashchange',route);route();
 
 /* helpers */
-const memName=id=>{const m=S.members.find(x=>x.id===id);return m?m.name:(S.signups.find(x=>x.id===id)?.name||'')};
+const memName=id=>{const m=S.members.find(x=>x.id===id);if(m&&m.name)return m.name;const Rr=S.roster||{};const r=[...(Rr.list||[]),...(Rr.formal||[]),...(Rr.members||[])].find(x=>x.id===id);return r?r.name:(S.signups.find(x=>x.id===id)?.name||'')};
 const myMember=()=>S.members.find(m=>m.id===uid);
 const isReg=id=>(S.roster.list||[]).some(r=>r.id===id);
 function payOf(id,sid,fee,v){if(!(fee>0))return 'free';const pd=S.paidSessions.find(x=>x.id===id);const pv=pd&&pd[sid];if(pv&&(pv===true||!v||!v.at||toD(pv).getTime()>=toD(v.at).getTime()-1000))return 'paid';const st=v&&v.reported?'pending':'unpaid';
   const ses=S.sessions.find(x=>x.id===sid);if(ses&&v&&!v.leave&&!ses.cancelled&&(st==='unpaid'||RU().strict)&&Date.now()>payDL(ses,v))return 'expired';return st}
 function count(sid){const ses=S.sessions.find(x=>x.id===sid)||{},cap=+ses.cap||0,kind=ses.kind||'regular',fee=+ses.fee||0;const it=id=>S.signups.find(x=>x.id===id)?.items?.[sid];
   const reg=[],leave=[],drop=[];
-  if(kind==='regular')for(const r of (S.roster.list||[])){const v=it(r.id);if(v&&v.leave)leave.push({id:r.id,name:r.name,reason:v.reason||''});else reg.push({id:r.id,name:r.name,n:1,pay:'free'})}
-  for(const sg of S.signups){const v=sg.items&&sg.items[sid];if(v&&!v.leave&&(kind==='open'||!isReg(sg.id))){const pay=payOf(sg.id,sid,fee,v);if(pay!=='expired')drop.push({id:sg.id,name:sg.name||'會員',n:+v.n||1,pay})}}
+  if(kind==='regular')for(const r of (S.roster.list||[])){const v=it(r.id);if(v&&v.leave)leave.push({id:r.id,name:memName(r.id)||r.name,reason:v.reason||''});else reg.push({id:r.id,name:memName(r.id)||r.name,n:1,pay:'free'})}
+  for(const sg of S.signups){const v=sg.items&&sg.items[sid];if(v&&!v.leave&&(kind==='open'||!isReg(sg.id))){const pay=payOf(sg.id,sid,fee,v);if(pay!=='expired')drop.push({id:sg.id,name:memName(sg.id)||sg.name||'會員',n:+v.n||1,pay})}}
   const sum=a=>a.reduce((t,x)=>t+x.n,0);const ok=drop.filter(x=>x.pay==='paid'||x.pay==='free');
   const n=reg.length+sum(drop);return {n,done:reg.length+sum(ok),cap,kind,fee,free:cap?Math.max(0,cap-n):99,reg,leave,drop,names:reg.concat(ok)}}
 function bars(rows,fmt=v=>v){const max=Math.max(1,...rows.map(r=>r[1]));return rows.length?rows.map(([k,v])=>`<div class="bar"><span>${esc(k)}</span><div><i style="width:${v/max*100}%"></i></div><span class="num">${esc(fmt(v))}</span></div>`).join(''):'<p class="mut">尚無資料</p>'}
@@ -430,6 +434,7 @@ function render(){
   $('#navMembers').hidden=!admin;$('#navSurvey').hidden=!uid||(!admin&&!S.surveys.some(x=>x.open));route();renderAuth();
   document.querySelectorAll('.polTxt').forEach(e=>e.innerHTML=polTxt());document.querySelectorAll('.payTxt').forEach(e=>e.innerHTML=payTxt());
   if(uid)setTimeout(cleanupExpired,0);
+  if(admin)setTimeout(()=>{syncRoster();if(S.membersLoaded&&S.introLoadedOnce)syncRoles(S.members)},0);
   renderIntro();renderSessions();renderSurveys();renderFees();renderFinance();renderStats();if(admin)renderMembers();
   const opts=S.members.slice().sort((a,b)=>(a.name||'').localeCompare(b.name||'','zh-Hant')).map(m=>`<option value="${esc(m.id)}">${esc(m.name)}（${esc(m.rel||'')}）</option>`).join('');
   const fm=$('#feeMem');const v=fm.value;fm.innerHTML=opts||'<option value="">請先建立會員</option>';if(v)fm.value=v;
@@ -518,7 +523,12 @@ const lines=t=>String(t||'').split('\n').map(l=>l.trim()).filter(Boolean).map(l=
 function parseAgenda(t){const out=[];for(const l of String(t).split('\n').map(x=>x.trim()).filter(Boolean)){
   if(l.startsWith('##')){const [title,tag]=l.replace(/^#+\s*/,'').split(/[｜|]/);out.push({title:(title||'').trim(),tag:(tag||'').trim(),items:[]})}
   else if(out.length)out[out.length-1].items.push(l.replace(/^[-•*]\s*/,''))}return out}
-function renderIntro(){
+function tierKpis(T){return `<div class="kpi"><span class="mut">固定隊友</span><b class="num paid">${T.fixed||0}</b><span class="mut">會費＋場地費</span></div><div class="kpi"><span class="mut">正式隊友</span><b class="num" style="color:var(--court)">${T.formal||0}</b><span class="mut">已繳年繳會費</span></div><div class="kpi"><span class="mut">會員</span><b class="num">${T.member||0}</b><span class="mut">尚未繳費</span></div><div class="kpi"><span class="mut">合計</span><b class="num">${T.total||0}</b></div>`}
+function renderTiers(){const T=S.tstats||{};$('#tierCard').hidden=T.total==null;if(T.total==null)return;
+  $('#tierPer').textContent=T.period?`（${T.period}）`:'';$('#tierKpi').innerHTML=tierKpis(T);
+  const R=S.roster||{};const grp=(t,l)=>l&&l.length?`<p class="mut" style="margin:10px 0 4px">${t}</p><div class="chips">${l.map(x=>`<span>${esc(x.name)}</span>`).join('')}</div>`:'';
+  $('#tierNames').innerHTML=uid?grp('固定隊友',R.list)+grp('正式隊友',R.formal)+grp('會員',R.members):'<p class="mut" style="margin:8px 0 0">登入後可查看隊員名單。</p>'}
+function renderIntro(){renderTiers();
   const I=S.intro||{};
   $('#iTag').textContent=I.tag||'一起揮拍、一起健康、一起成長！';
   $('#iAbout').textContent=I.about||'';
@@ -526,7 +536,9 @@ function renderIntro(){
   const lv={};(I.org||[]).forEach(o=>{(lv[o.lv]=lv[o.lv]||[]).push(o)});
   const keys=Object.keys(lv).sort((a,b)=>a-b);
   const holders=r=>S.roles.filter(x=>x.role===r).map(x=>x.name);
-  const nodeBody=o=>{const h=holders(o.role);if(h.length)return `<span class="rl">${esc(o.role)}</span><b>${h.length>6?h.length+' 位':h.map(esc).join('、')}</b>`;
+  const T=S.tstats||{};const isMemNode=o=>/一般會員|一般隊員|^會員$|^隊員$/.test(o.role||'');
+  const nodeBody=o=>{if(isMemNode(o)&&T.total!=null)return `<span class="rl">${esc(o.role)}</span><b>${T.total} 位</b><small>固定隊友 ${T.fixed||0}・正式隊友 ${T.formal||0}・會員 ${T.member||0}</small>`;
+    const h=holders(o.role);if(h.length)return `<span class="rl">${esc(o.role)}</span><b>${h.length>6?h.length+' 位':h.map(esc).join('、')}</b>`;
     return o.name?`<span class="rl">${esc(o.role)}</span><b>${esc(o.name)}</b>`:`<b>${esc(o.role)}</b>`};
   $('#iOrg').innerHTML=keys.length?keys.map((k,i)=>`<div class="lv">${lv[k].map(o=>`<div class="node ${i===0?'top':''}">${nodeBody(o)}${o.note?`<small>${esc(o.note)}</small>`:''}</div>`).join('')}</div>`).join(''):'<p class="mut">尚未設定</p>';
   const fees=I.fees||[];
@@ -610,10 +622,10 @@ function renderPays(){
    {const v=$('#caMem').value;$('#caMem').innerHTML=S.members.slice().sort((a,b)=>(a.name||'').localeCompare(b.name||'','zh-Hant')).map(m=>`<option value="${esc(m.id)}">${esc(m.name)}</option>`).join('')||'<option value="">尚無會員</option>';if(v)$('#caMem').value=v;
     const cb=$('#caMem').value?creditOf($('#caMem').value).balance:0;$('#caNow').textContent=$('#caMem').value?`目前餘額 ${money(cb)}`:''}
    const al=S.creditAdj.slice().sort((a,b)=>toD(b.at)-toD(a.at)).slice(0,15);
-   $('#caList').innerHTML=al.length?`<table class="stack"><thead><tr><th>日期</th><th>會員</th><th class="r">金額</th><th>原因</th><th>調整者</th></tr></thead><tbody>${al.map(a=>`<tr><td>${esc(tpDate(toD(a.at)))}</td><td>${esc(a.name)}</td><td class="r num ${(+a.amount)>=0?'paid':'unpaid'}">${(+a.amount)>=0?'+':'−'}${money(Math.abs(+a.amount||0))}</td><td>${esc(a.reason)}</td><td class="mut">${esc(a.by)}</td></tr>`).join('')}</tbody></table>`:''}
+   $('#caList').innerHTML=al.length?`<table class="stack"><thead><tr><th>日期</th><th>會員</th><th class="r">金額</th><th>原因</th><th>調整者</th></tr></thead><tbody>${al.map(a=>`<tr><td>${esc(tpDate(toD(a.at)))}</td><td>${esc(memName(a.memberId)||a.name)}</td><td class="r num ${(+a.amount)>=0?'paid':'unpaid'}">${(+a.amount)>=0?'+':'−'}${money(Math.abs(+a.amount||0))}</td><td>${esc(a.reason)}</td><td class="mut">${esc(a.by)}</td></tr>`).join('')}</tbody></table>`:''}
   const pend=S.payments.filter(x=>x.status==='pending').sort((a,b)=>toD(a.at)-toD(b.at));
   $('#pendN').textContent=pend.length?`（${pend.length} 筆）`:'';
-  $('#pendList').innerHTML=pend.length?`<table class="stack"><thead><tr><th>會員</th><th>項目／期別</th><th class="r">金額</th><th>匯款日</th><th>末五碼</th><th>備註</th><th></th></tr></thead><tbody>${pend.map(x=>`<tr><td><b>${esc(x.name)}</b></td><td>${esc(x.item)}<div class="mut">${esc(x.sessionLabel||x.period)}</div></td><td class="r num">${money(x.amount)}</td><td>${esc(x.date)}</td><td class="num" style="font-size:18px">${isCreditWay(x.way)?`<span class="pend" style="font-size:14px">保留款折抵</span><div class="mut" style="font-size:13px">餘額 ${money(creditOf(x.memberId).balance+(+x.amount||0))}</div>`:esc(x.last5)}${x.sessionId&&!S.signups.find(y=>y.id===x.memberId)?.items?.[x.sessionId]?'<div class="mut" style="font-size:13px">已取消報名</div>':''}</td><td>${esc(x.note)}</td><td><div class="row"><button class="ball" style="min-height:38px;padding:4px 12px" data-okpay="${esc(x.id)}">確認入帳</button><button class="del" data-nopay="${esc(x.id)}">退回</button></div></td></tr>`).join('')}</tbody></table>`:'<p class="mut">目前沒有待確認的匯款。</p>';
+  $('#pendList').innerHTML=pend.length?`<table class="stack"><thead><tr><th>會員</th><th>項目／期別</th><th class="r">金額</th><th>匯款日</th><th>末五碼</th><th>備註</th><th></th></tr></thead><tbody>${pend.map(x=>`<tr><td><b>${esc(memName(x.memberId)||x.name)}</b></td><td>${esc(x.item)}<div class="mut">${esc(x.sessionLabel||x.period)}</div></td><td class="r num">${money(x.amount)}</td><td>${esc(x.date)}</td><td class="num" style="font-size:18px">${isCreditWay(x.way)?`<span class="pend" style="font-size:14px">保留款折抵</span><div class="mut" style="font-size:13px">餘額 ${money(creditOf(x.memberId).balance+(+x.amount||0))}</div>`:esc(x.last5)}${x.sessionId&&!S.signups.find(y=>y.id===x.memberId)?.items?.[x.sessionId]?'<div class="mut" style="font-size:13px">已取消報名</div>':''}</td><td>${esc(x.note)}</td><td><div class="row"><button class="ball" style="min-height:38px;padding:4px 12px" data-okpay="${esc(x.id)}">確認入帳</button><button class="del" data-nopay="${esc(x.id)}">退回</button></div></td></tr>`).join('')}</tbody></table>`:'<p class="mut">目前沒有待確認的匯款。</p>';
 }
 function myUnpaid(){return S.sessions.filter(x=>{if(x.cancelled)return false;const v=S.signups.find(y=>y.id===uid)?.items?.[x.id];return v&&!v.leave&&payOf(uid,x.id,+x.fee||0,v)==='unpaid'}).sort((a,b)=>a.date.localeCompare(b.date))}
 function fillPySess(sel){const l=myUnpaid();const cur=sel||$('#pySess').value;$('#pySess').innerHTML=l.length?l.map(x=>`<option value="${esc(x.id)}">${esc(sLabel(x))}（${x.kind==='open'?'特別場次':'零打'}）</option>`).join(''):'<option value="">目前沒有待繳費的場次</option>';if(cur&&l.some(x=>x.id===cur))$('#pySess').value=cur}
@@ -644,13 +656,20 @@ document.addEventListener('click',async e=>{const b=e.target.closest('button');i
 });
 async function markPaid(mid,sid,on){const cur=S.paidSessions.find(p=>p.id===mid)||{};const d={...cur};delete d.id;if(on)d[sid]=FB.serverTime();else delete d[sid];return save(db.doc('paidSessions/'+mid),d)}
 let rosterBusy=false;
-async function syncRoster(){if(!admin||rosterBusy||!S.feesLoaded||!S.membersLoaded)return;const per=S.config.period||'';
-  const has=(id,fn)=>S.fees.some(f=>f.memberId===id&&f.period===per&&fn(f.item));
-  const ids=[...new Set(S.fees.filter(f=>f.period===per).map(f=>f.memberId))].filter(id=>has(id,isA)&&has(id,isV));
-  const list=ids.map(id=>({id,name:(S.members.find(m=>m.id===id)?.name)||(S.fees.find(f=>f.memberId===id)?.name)||'會員'})).sort((a,b)=>a.id<b.id?-1:1);
-  if(JSON.stringify({period:per,list})===JSON.stringify({period:S.roster.period||'',list:S.roster.list||[]}))return;
-  rosterBusy=true;try{await db.doc('roster/current').set({period:per,list,updatedAt:new Date().toISOString()})}catch(e){console.error(e)}rosterBusy=false}
-function renderFees(){renderPays();syncRoster();
+const TIER={fixed:'固定隊友',formal:'正式隊友',member:'會員'};
+function tierOf(id){const per=S.config.period||'';const has=fn=>S.fees.some(f=>f.memberId===id&&f.period===per&&fn(f.item));const a=has(isA),v=has(isV);return a&&v?'fixed':a?'formal':'member'}
+function tierLists(){const g={fixed:[],formal:[],member:[]};for(const m of S.members)g[tierOf(m.id)].push({id:m.id,name:m.name||'會員'});
+  for(const k in g)g[k].sort((a,b)=>a.id<b.id?-1:1);return g}
+async function syncRoster(){if(!admin||rosterBusy||!S.feesLoaded||!S.membersLoaded||!S.introLoadedOnce)return;const per=S.config.period||'';
+  const g=tierLists();const list=g.fixed;
+  const cur={period:S.roster.period||'',list:S.roster.list||[],formal:S.roster.formal||[],members:S.roster.members||[]};
+  const next={period:per,list,formal:g.formal,members:g.member};
+  const st={fixed:g.fixed.length,formal:g.formal.length,member:g.member.length,total:S.members.length,period:per};
+  const stCur={fixed:S.tstats.fixed,formal:S.tstats.formal,member:S.tstats.member,total:S.tstats.total,period:S.tstats.period};
+  if(JSON.stringify(next)===JSON.stringify(cur)&&JSON.stringify(st)===JSON.stringify(stCur))return;
+  rosterBusy=true;try{if(JSON.stringify(next)!==JSON.stringify(cur))await db.doc('roster/current').set({...next,updatedAt:new Date().toISOString()});
+    if(JSON.stringify(st)!==JSON.stringify(stCur))await db.doc('config/stats').set({...st,updatedAt:new Date().toISOString()})}catch(e){console.error(e)}rosterBusy=false}
+function renderFees(){renderPays();
   const period=S.config.period||'',amt=+S.config.amount||0,vf=+S.config.venueFee||0;
   const fees=S.fees.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||''));
   const shown=admin?fees:fees.filter(f=>f.memberId===uid);
@@ -663,10 +682,10 @@ function renderFees(){renderPays();syncRoster();
   if(admin){$('#feeStatusTitle').textContent=`${period||'本期'}繳費狀況`;
     const ms=S.members.slice().sort((a,b)=>{const x=feeSt(a.id),y=feeSt(b.id);return (x.a+x.v)-(y.a+y.v)});
     $('#feeStatus').innerHTML=ms.length?`<div class="chips">${ms.map(m=>{const t=feeSt(m.id);return `<span>${esc(m.name)}　${mark(t.a,'會費',t.pa)} ${mark(t.v,'場地',t.pv)}</span>`}).join('')}</div>`:'<p class="mut">尚無會員</p>'}
-  $('#feeList').innerHTML=shown.length?`<table class="stack"><thead><tr><th>日期</th><th>會員</th><th>項目</th><th>期別／場次</th><th class="r">金額</th><th>方式</th><th>備註</th>${admin?'<th></th>':''}</tr></thead><tbody>${shown.map(f=>`<tr><td>${esc(f.date)}</td><td>${esc(f.name)}</td><td>${esc(f.item)}</td><td>${esc(f.sessionLabel||f.period)}</td><td class="r num">${money(f.amount)}</td><td>${esc(f.way)}</td><td>${esc(f.note)}</td>${admin?`<td><button class="del" data-dfee="${esc(f.id)}">刪除</button></td>`:''}</tr>`).join('')}</tbody></table>`:'<p class="mut">尚無繳費紀錄</p>';
+  $('#feeList').innerHTML=shown.length?`<table class="stack"><thead><tr><th>日期</th><th>會員</th><th>項目</th><th>期別／場次</th><th class="r">金額</th><th>方式</th><th>備註</th>${admin?'<th></th>':''}</tr></thead><tbody>${shown.map(f=>`<tr><td>${esc(f.date)}</td><td>${esc(memName(f.memberId)||f.name)}</td><td>${esc(f.item)}</td><td>${esc(f.sessionLabel||f.period)}</td><td class="r num">${money(f.amount)}</td><td>${esc(f.way)}</td><td>${esc(f.note)}</td>${admin?`<td><button class="del" data-dfee="${esc(f.id)}">刪除</button></td>`:''}</tr>`).join('')}</tbody></table>`:'<p class="mut">尚無繳費紀錄</p>';
 }
 function finRows(){
-  return [...S.fees.filter(f=>!isCreditWay(f.way)).map(f=>({date:f.date,t:'in',cat:f.item||'其他',desc:(f.name||'')+' '+(f.sessionLabel||f.period||''),amt:+f.amount||0,src:'fee'})),
+  return [...S.fees.filter(f=>!isCreditWay(f.way)).map(f=>({date:f.date,t:'in',cat:f.item||'其他',desc:(memName(f.memberId)||f.name||'')+' '+(f.sessionLabel||f.period||''),amt:+f.amount||0,src:'fee'})),
    ...S.ledger.map(l=>({id:l.id,date:l.date,t:l.type,cat:l.cat,desc:l.desc,amt:+l.amount||0,src:'led'}))].sort((a,b)=>(a.date||'').localeCompare(b.date||''));
 }
 function renderFinance(){
@@ -681,7 +700,7 @@ function renderFinance(){
   $('#finList').innerHTML=rows.length?`<div><table class="stack"><thead><tr><th>日期</th><th>類別</th><th>說明</th><th class="r">收入</th><th class="r">支出</th><th class="r">結餘</th>${admin?'<th></th>':''}</tr></thead><tbody>${rows.slice().reverse().map(r=>`<tr><td style="white-space:nowrap">${esc(r.date)}</td><td>${esc(r.cat)}</td><td>${esc(r.desc)}</td><td class="r num">${r.t==='in'?money(r.amt):''}</td><td class="r num">${r.t==='out'?money(r.amt):''}</td><td class="r num">${money(r.bal)}</td>${admin?`<td>${r.src==='led'?`<button class="del" data-dled="${esc(r.id)}">刪除</button>`:'<span class="mut">會費頁</span>'}</td>`:''}</tr>`).join('')}</tbody></table></div><p class="mut">會費收入只計入已對帳確認的款項，由「會費繳費」頁自動帶入。</p>`:'<p class="mut">尚無收支紀錄</p>';
 }
 function renderCancelStats(){const days=+$('#stRange').value;const from=days?tpDate(Date.now()-days*864e5):'';
-  const T={};const get=(id,name)=>T[id]||(T[id]={id,name:name||memName(id)||'會員',leave:0,early:0,late:0,exp:0,last:''});
+  const T={};const get=(id,name)=>T[id]||(T[id]={id,name:memName(id)||name||'會員',leave:0,early:0,late:0,exp:0,last:''});
   for(const sg of S.signups)for(const [sid,v] of Object.entries(sg.items||{})){if(!v.leave)continue;const ses=S.sessions.find(x=>x.id===sid);if(!ses||ses.cancelled||(from&&ses.date<from))continue;const r=get(sg.id,sg.name);r.leave++;if(ses.date>r.last)r.last=ses.date}
   for(const c of S.cancels){if(c.force)continue;const ses=S.sessions.find(x=>x.id===c.sessionId);const sd=ses?ses.date:(c.sessionDate||'');if(from&&sd<from)continue;const r=get(c.memberId,c.name);
     if(c.expired)r.exp++;else if(ses?toD(c.at).getTime()<cancelDL(ses):(sd&&tpDate(toD(c.at))<sd))r.early++;else r.late++;if(sd>r.last)r.last=sd}
@@ -692,7 +711,7 @@ function renderStats(){
   const past=S.sessions.filter(s=>s.date<=today&&!s.cancelled).sort((a,b)=>a.date.localeCompare(b.date));
   const att=past.map(s=>count(s.id).n);const avg=att.length?(att.reduce((a,b)=>a+b,0)/att.length):0;
   const month=today.slice(0,7);
-  $('#stKpi').innerHTML=(admin?`<div class="kpi"><span class="mut">會員數</span><b class="num">${S.members.length}</b></div>`:'')+
+  $('#stKpi').innerHTML=tierKpis(S.tstats||{})+
    `<div class="kpi"><span class="mut">本月場次</span><b class="num">${S.sessions.filter(s=>s.date.startsWith(month)).length}</b></div><div class="kpi"><span class="mut">已辦場次</span><b class="num">${past.length}</b></div><div class="kpi"><span class="mut">平均出席</span><b class="num">${avg.toFixed(1)}</b></div>`;
   $('#stSess').innerHTML=bars(past.slice(-10).map(s=>[s.date.slice(5)+' '+(s.venue||'').slice(0,4),count(s.id).n]),v=>v+' 人');
   const pastIds=new Set(past.map(s=>s.id));
@@ -709,7 +728,9 @@ function renderStats(){
 }
 const roleList=()=>[...new Set((S.intro?.org||[]).map(o=>o.role).filter(Boolean))];
 function roleOpts(cur){const rs=roleList();if(cur&&!rs.includes(cur))rs.push(cur);return '<option value="">（無）</option>'+rs.map(r=>`<option${r===cur?' selected':''}>${esc(r)}</option>`).join('')}
-async function syncRoles(list){const next=list.filter(m=>m.role).map(m=>({id:m.id,name:m.name||'',role:m.role})).sort((a,b)=>a.id<b.id?-1:1);
+let rolesBusy=false;
+async function syncRoles(list){if(rolesBusy)return;rolesBusy=true;try{await _syncRoles(list)}finally{rolesBusy=false}}
+async function _syncRoles(list){const next=list.filter(m=>m.role).map(m=>({id:m.id,name:m.name||'',role:m.role})).sort((a,b)=>a.id<b.id?-1:1);
   if(JSON.stringify(next)!==JSON.stringify(S.roles))await save(db.doc('config/roles'),{list:next})}
 document.addEventListener('change',async e=>{const sel=e.target.closest('select[data-role]');if(!sel)return;
   const m=S.members.find(x=>x.id===sel.dataset.role);if(!m)return;const d={...m};delete d.id;d.role=sel.value;
@@ -719,7 +740,7 @@ function renderMembers(){renderAdmins();
   const q=$('#mSearch').value.trim().toLowerCase();
   const att=id=>S.sessions.filter(x=>x.date<=today&&count(x.id).names.some(y=>y.id===id)).length;
   const ms=S.members.filter(m=>!q||[m.name,m.nick,m.phone,m.rel,m.email,m.ref].join(' ').toLowerCase().includes(q)).sort((a,b)=>(a.name||'').localeCompare(b.name||'','zh-Hant'));
-  $('#memList').innerHTML=ms.length?`<table class="stack"><thead><tr><th>姓名</th><th>球隊職位</th><th>身分</th><th>生日／身分證</th><th>程度</th><th>手機</th><th>Email</th><th>介紹人</th><th>宣誓</th><th>偏好時間／頻率</th><th>本期繳費</th><th class="r">出席次數</th><th></th></tr></thead><tbody>${ms.map(m=>`<tr><td><b>${esc(m.name)}</b>${m.nick?` <span class="mut">${esc(m.nick)}</span>`:''}${m.self?'':' <span class="mut">代建</span>'}</td><td><select class="roleSel" data-role="${esc(m.id)}" aria-label="球隊職位" style="min-height:36px;padding:4px 8px">${roleOpts(m.role)}</select></td><td>${esc(m.rel)}</td><td>${esc(m.birth||'')}<div class="mut">${esc(maskId(m.nid))}</div></td><td>${esc(m.level)}</td><td>${esc(m.phone)}</td><td>${esc(m.email)}</td><td>${esc(m.ref)}</td><td>${m.oathAt?'<span class="paid">✓ '+esc(m.oathAt)+'</span>':'<span class="mut">—</span>'}</td><td>${esc(prefText(m))}${m.freq?`<div class="mut">${esc(m.freq)}</div>`:''}</td><td>${(t=>mark(t.a,'會費',t.pa)+' '+mark(t.v,'場地',t.pv))(feeSt(m.id))}</td><td class="r num">${att(m.id)}</td><td><div class="row">${m.self?'':`<button class="ghost" style="min-height:36px;padding:4px 10px" data-emem="${esc(m.id)}">編輯</button>`}<button class="del" data-dmem="${esc(m.id)}">刪除</button></div></td></tr>`).join('')}</tbody></table>`:'<p class="mut">尚無會員</p>';
+  $('#memList').innerHTML=ms.length?`<table class="stack"><thead><tr><th>姓名</th><th>層級</th><th>球隊職位</th><th>身分</th><th>生日／身分證</th><th>程度</th><th>手機</th><th>Email</th><th>介紹人</th><th>宣誓</th><th>偏好時間／頻率</th><th>本期繳費</th><th class="r">出席次數</th><th></th></tr></thead><tbody>${ms.map(m=>`<tr><td><b>${esc(m.name)}</b>${m.nick?` <span class="mut">${esc(m.nick)}</span>`:''}${m.self?'':' <span class="mut">代建</span>'}</td><td>${(t=>`<b class="${t==='fixed'?'paid':t==='formal'?'':'mut'}" style="${t==='formal'?'color:var(--court)':''}">${TIER[t]}</b>`)(tierOf(m.id))}</td><td><select class="roleSel" data-role="${esc(m.id)}" aria-label="球隊職位" style="min-height:36px;padding:4px 8px">${roleOpts(m.role)}</select></td><td>${esc(m.rel)}</td><td>${esc(m.birth||'')}<div class="mut">${esc(maskId(m.nid))}</div></td><td>${esc(m.level)}</td><td>${esc(m.phone)}</td><td>${esc(m.email)}</td><td>${esc(m.ref)}</td><td>${m.oathAt?'<span class="paid">✓ '+esc(m.oathAt)+'</span>':'<span class="mut">—</span>'}</td><td>${esc(prefText(m))}${m.freq?`<div class="mut">${esc(m.freq)}</div>`:''}</td><td>${(t=>mark(t.a,'會費',t.pa)+' '+mark(t.v,'場地',t.pv))(feeSt(m.id))}</td><td class="r num">${att(m.id)}</td><td><div class="row">${m.self?'':`<button class="ghost" style="min-height:36px;padding:4px 10px" data-emem="${esc(m.id)}">編輯</button>`}<button class="del" data-dmem="${esc(m.id)}">刪除</button></div></td></tr>`).join('')}</tbody></table>`:'<p class="mut">尚無會員</p>';
 }
 const PF={birth:'pBirth',nid:'pNid',name:'pName',nick:'pNick',rel:'pRel',ref:'pRef',phone:'pPhone',email:'pEmail',gender:'pGender',level:'pLevel',paddle:'pPaddle',size:'pSize',emer:'pEmer',emerPhone:'pEmerPhone',note:'pNote'};
 function getPref(p){const t=[...document.querySelectorAll(`input[name=${p}T]:checked`)].map(i=>i.value);return {prefTimes:t,prefOther:t.includes('其他')?$('#'+p+'OtherTime').value.trim():'',freq:document.querySelector(`input[name=${p}F]:checked`)?.value||''}}
@@ -882,9 +903,9 @@ $('#fMem').addEventListener('submit',async e=>{e.preventDefault();
   const id=editId||('m_'+Date.now().toString(36));
   if(await save(db.collection('members').doc(id),d,editId?'已更新':'會員已新增')){resetMem();await syncRoles(S.members.filter(x=>x.id!==id).concat([{...d,id}]))}});
 $('#mSearch').addEventListener('input',renderMembers);
-$('#mCopy').addEventListener('click',async()=>{const h=['姓名','出生年月日','身分證字號','暱稱','身分','介紹人','手機','Email','程度','球衣','緊急聯絡人','緊急電話','加入日','宣誓日','偏好時間','球敘頻率','球隊職位'];
+$('#mCopy').addEventListener('click',async()=>{const h=['層級','姓名','出生年月日','身分證字號','暱稱','身分','介紹人','手機','Email','程度','球衣','緊急聯絡人','緊急電話','加入日','宣誓日','偏好時間','球敘頻率','球隊職位'];
   const q=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
-  const csv=[h.join(','),...S.members.map(m=>[m.name,m.birth,m.nid,m.nick,m.rel,m.ref,m.phone,m.email,m.level,m.size,m.emer,m.emerPhone,m.joinedAt,m.oathAt,prefText(m),m.freq,m.role].map(q).join(','))].join('\n');
+  const csv=[h.join(','),...S.members.map(m=>[TIER[tierOf(m.id)],m.name,m.birth,m.nid,m.nick,m.rel,m.ref,m.phone,m.email,m.level,m.size,m.emer,m.emerPhone,m.joinedAt,m.oathAt,prefText(m),m.freq,m.role].map(q).join(','))].join('\n');
   try{await navigator.clipboard.writeText(csv);toast('已複製，可貼到 Excel / Google 試算表')}catch(_){toast('無法複製')}});
 $('#feeDate').value=today;$('#pyDate').value=today;$('#lDate').value=today;$('#sDate').value=today;
 
@@ -938,6 +959,7 @@ function start(){
     stopAll();pub('config/intro',sn=>{S.introLoadedOnce=true;S.introExists=sn.exists;S.intro=sn.exists?sn.data():{};render()});
     pub('config/main',sn=>{S.config=sn.exists?sn.data():{};if(!document.activeElement||!document.activeElement.closest('#fRules'))fillRules();if(admin&&!$('#cPeriod').value){$('#cPeriod').value=S.config.period||'';$('#cAmt').value=S.config.amount||'';$('#cVenue').value=S.config.venueFee||''}render()});
     pub('config/roles',sn=>{S.roles=sn.exists?(sn.data().list||[]):[];render()});
+    pub('config/stats',sn=>{S.tstats=sn.exists?sn.data():{};render()});
     Object.assign(S,{creditAdj:[],cancels:[],paidSessions:[],roster:{},payments:[],admins:[],members:[],sessions:[],signups:[],fees:[],ledger:[],surveys:[],responses:[]});profLoaded=false;
     if(!u||(authUser&&authUser.uid!==u.uid)){$('#fProf').reset();setPref('p',{});$('#pMsg').textContent=''}
     $('#lgPass').value='';authUser=u;uid=u?u.uid:null;admin=false;
